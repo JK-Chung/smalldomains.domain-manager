@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import smalldomains.domainmanager.exception.NoSmallDomainExists;
@@ -15,6 +16,7 @@ import smalldomains.domainmanager.exception.SmallDomainAlreadyExists;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,22 +31,25 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 
+    @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(SmallDomainAlreadyExists.class)
     public Map<String, String> handleSmallDomainAlreadyExists(final SmallDomainAlreadyExists ex) {
         return generateErrorBody(String.format("small domain already exists: %s", ex.getAlreadyExistingDomain()));
     }
 
+    @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoSmallDomainExists.class)
     public Map<String, String> handleNoSmallDomainExists(final NoSmallDomainExists ex) {
         return generateErrorBody(ex.getNameOfNonExistentDomain() + " not found");
     }
 
+    @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(WebExchangeBindException.class)
     public Map<String, Object> handleValidationExceptions(final WebExchangeBindException ex) {
-        final Map<String, Object> mutableResponse = new HashMap<>(
+        final Map<String, Object> mutableResponse = new LinkedHashMap<>(
             generateErrorBody("Bad Request - Check \"validationErrors\" for more details")
         );
 
