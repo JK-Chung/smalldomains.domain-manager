@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Manages all operations (CRUD, etc) regarding the SmallDomains DynamoDB table
+ */
 @Log4j2
 @Repository
 public class SmallDomainRepository {

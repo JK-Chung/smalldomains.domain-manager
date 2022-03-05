@@ -10,6 +10,11 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 @Configuration
 public class DynamoDbConfig {
 
+    /**
+     * Configures the DynamoDBClient to call whichever table is necessary
+     * @param region location of table
+     * @return an async client
+     */
     @Bean
     public DynamoDbAsyncClient dynamoDbAsyncClient(@Value("${dynamodb.region}") String region) {
         return DynamoDbAsyncClient.builder()

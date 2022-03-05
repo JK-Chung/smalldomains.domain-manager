@@ -7,6 +7,9 @@ import smalldomains.domainmanager.entity.SmallDomain;
 import smalldomains.domainmanager.exception.SmallDomainAlreadyExistsException;
 import smalldomains.domainmanager.repository.SmallDomainRepository;
 
+/**
+ * Service for the management of small domains
+ */
 @Service
 @RequiredArgsConstructor
 public class SmallDomainService {

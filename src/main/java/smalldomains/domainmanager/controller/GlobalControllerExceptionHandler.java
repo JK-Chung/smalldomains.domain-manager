@@ -9,6 +9,13 @@ import smalldomains.domainmanager.exception.SmallDomainAlreadyExistsException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * This application has been designed to throw the correct error HTTP codes/messages when various different exceptions occur
+ * This creates a new ExceptionHandler for each type of exception which may be thrown. Each ExceptionHandler composes the most appropriate
+ * HTTP response code and messages.
+ *
+ * The ControllerAdvice annotation means that these handlers apply globally - to all controllers
+ */
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 

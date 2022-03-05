@@ -5,6 +5,9 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
 
+/**
+ * Maps between the SmallDomain POJO and its equivalent in the DynamoDB table
+ */
 public class SmallDomainMapper {
 
     public static SmallDomain fromItem(final Map<String, AttributeValue> item) {

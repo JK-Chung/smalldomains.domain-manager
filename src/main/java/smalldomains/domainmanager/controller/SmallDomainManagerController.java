@@ -11,6 +11,9 @@ import smalldomains.domainmanager.service.SmallDomainService;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * Controller handles the management of small domains
+ */
 @RestController
 @RequestMapping("smalldomain")
 @RequiredArgsConstructor
