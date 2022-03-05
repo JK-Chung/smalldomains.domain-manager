@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import smalldomains.domainmanager.exception.SmallDomainAlreadyExistsException;
+import smalldomains.domainmanager.exception.NoSmallDomainExists;
+import smalldomains.domainmanager.exception.SmallDomainAlreadyExists;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -19,14 +20,25 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 
-    @ExceptionHandler(SmallDomainAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handleApiCallError(final SmallDomainAlreadyExistsException ex) {
+    @ExceptionHandler(SmallDomainAlreadyExists.class)
+    public ResponseEntity<Map<String, String>> handleSmallDomainAlreadyExists(final SmallDomainAlreadyExists ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(Map.of(
-                        "timestamp", LocalDateTime.now().toString(),
-                        "error", String.format("small domain already exists: %s", ex.getAlreadyExistingDomain())
-                ));
+                .body(generateErrorBody(String.format("small domain already exists: %s", ex.getAlreadyExistingDomain())));
+    }
+
+    @ExceptionHandler(NoSmallDomainExists.class)
+    public ResponseEntity<Map<String, String>> handleNoSmallDomainExists(final NoSmallDomainExists ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(generateErrorBody(ex.getNameOfNonExistentDomain() + " not found"));
+    }
+
+    private Map<String, String> generateErrorBody(final String errorMessage) {
+        return Map.of(
+                "timestamp", LocalDateTime.now().toString(),
+                "error", errorMessage
+        );
     }
 
 }
