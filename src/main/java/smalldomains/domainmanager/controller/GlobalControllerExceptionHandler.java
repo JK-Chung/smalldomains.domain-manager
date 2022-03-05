@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import smalldomains.domainmanager.exception.NoSmallDomainExists;
 import smalldomains.domainmanager.exception.SmallDomainAlreadyExists;
@@ -28,31 +29,28 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(SmallDomainAlreadyExists.class)
-    public ResponseEntity<Map<String, String>> handleSmallDomainAlreadyExists(final SmallDomainAlreadyExists ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(generateErrorBody(String.format("small domain already exists: %s", ex.getAlreadyExistingDomain())));
+    public Map<String, String> handleSmallDomainAlreadyExists(final SmallDomainAlreadyExists ex) {
+        return generateErrorBody(String.format("small domain already exists: %s", ex.getAlreadyExistingDomain()));
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoSmallDomainExists.class)
-    public ResponseEntity<Map<String, String>> handleNoSmallDomainExists(final NoSmallDomainExists ex) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(generateErrorBody(ex.getNameOfNonExistentDomain() + " not found"));
+    public Map<String, String> handleNoSmallDomainExists(final NoSmallDomainExists ex) {
+        return generateErrorBody(ex.getNameOfNonExistentDomain() + " not found");
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(WebExchangeBindException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(final WebExchangeBindException ex) {
+    public Map<String, Object> handleValidationExceptions(final WebExchangeBindException ex) {
         final Map<String, Object> mutableResponse = new HashMap<>(
             generateErrorBody("Bad Request - Check \"validationErrors\" for more details")
         );
 
         mutableResponse.put("validationErrors", generateValidationErrors(ex));
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(mutableResponse);
+        return mutableResponse;
     }
 
     private Map<String, String> generateErrorBody(final String errorMessage) {

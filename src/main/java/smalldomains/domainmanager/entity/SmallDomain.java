@@ -4,7 +4,12 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.validation.Constraint;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * A POJO representing the item's structure in the DynamoDB table.
@@ -14,8 +19,13 @@ import javax.validation.constraints.NotBlank;
 @Value
 @Jacksonized @Builder
 public class SmallDomain {
+    private static final String ALPHA_NUM_REGEX = "^[a-zA-Z0-9]+$";
+
     @NotBlank
+    @Pattern(regexp = ALPHA_NUM_REGEX)
     String smallDomain;
+
     @NotBlank
     String bigDomain;
+
 }
