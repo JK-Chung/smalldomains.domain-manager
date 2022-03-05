@@ -11,7 +11,7 @@
     <groupId>smalldomains</groupId>
     <artifactId>domain-manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>domain-manager</name>
+    <name>smalldomains.domain-manager</name>
     <description>REST service to allow for the management of small domains</description>
     <packaging>jar</packaging>
     <properties>
