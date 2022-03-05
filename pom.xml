@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>domain-manager</name>
     <description>REST service to allow for the management of small domains</description>
+    <packaging>jar</packaging>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -74,6 +75,7 @@
     </dependencies>
 
     <build>
+        <finalName>domain-manager</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
