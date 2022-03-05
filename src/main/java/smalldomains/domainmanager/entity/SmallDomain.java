@@ -4,12 +4,8 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.Constraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 /**
  * A POJO representing the item's structure in the DynamoDB table.
