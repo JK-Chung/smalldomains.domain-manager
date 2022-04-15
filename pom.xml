@@ -15,7 +15,7 @@
     <description>REST service to allow for the management of small domains</description>
     <packaging>jar</packaging>
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <dependencyManagement>
