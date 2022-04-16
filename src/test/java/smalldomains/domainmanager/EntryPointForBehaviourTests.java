@@ -1,4 +1,4 @@
-package smalldomains.domainmanager.behaviourTests;
+package smalldomains.domainmanager;
 
 import org.junit.platform.suite.api.*;
 
@@ -16,5 +16,5 @@ import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
 @SelectClasspathResource("behaviourTests")
 // Select Module holding Glue classes: step definitions, cucumber config classes, etc
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "smalldomains.domainmanager.behaviourTests")
-public class CucumberEntryPoint {
+public class EntryPointForBehaviourTests {
 }

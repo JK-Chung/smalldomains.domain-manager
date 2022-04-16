@@ -164,6 +164,17 @@
                 </configuration>
             </plugin>
 
+            <!-- To execute the mvn test goal-->
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M6</version>
+                <configuration>
+                    <includes>
+                        <include>EntryPoint*Tests.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
             <!-- Required Plugin so that DynamoDBLocal can be used during testing -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
