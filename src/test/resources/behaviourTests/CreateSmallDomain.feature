@@ -1,4 +1,4 @@
-Feature: Guess the word
+Feature: Creating a SmallDomain
 
   Scenario: I try to create a SmallDomain which does not yet exist
     Given the application is ready
