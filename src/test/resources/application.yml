@@ -1,3 +1,8 @@
+spring:
+  main:
+    # Allow tests to override beans defined in the main application context
+    allow-bean-definition-overriding: true
+
 dynamodb:
   region: eu-west-1
   tablename: small-domain_redirects

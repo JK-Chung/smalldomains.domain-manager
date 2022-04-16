@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * This creates a new ExceptionHandler for each type of exception which may be thrown. Each ExceptionHandler composes the most appropriate
  * HTTP response code and messages.
  *
- * The ControllerAdvice annotation means that these handlers apply globally - to all controllers
+ * The ControllerAdvice annotation means that these handlers apply globally - to all controllers. It's really neat!
  */
 @Log4j2
 @ControllerAdvice
