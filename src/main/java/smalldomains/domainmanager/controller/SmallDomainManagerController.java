@@ -1,6 +1,7 @@
 package smalldomains.domainmanager.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -23,16 +24,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 @Validated
 @RestController
-@RequestMapping("smalldomain")
+@RequestMapping("/")
 @RequiredArgsConstructor
 public class SmallDomainManagerController {
     private final SmallDomainService smallDomainService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public Mono<SmallDomain> createSmallDomain(@Valid @RequestBody final SmallDomain newSmallDomain) {
         return smallDomainService.createNewSmallDomain(newSmallDomain);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "{smallDomain}", produces = APPLICATION_JSON_VALUE)
     public Mono<SmallDomain> getSmallDomain(@PathVariable final String smallDomain) {
         return smallDomainService.getSmallDomain(smallDomain);

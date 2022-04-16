@@ -1,6 +1,5 @@
 package smalldomains.domainmanager.behaviourTests.dynamoDBInstance;
 
-import io.cucumber.spring.ScenarioScope;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,29 +18,20 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-// Annotated with ScenarioScope - meaning that this component is started up and torn down before and after each Cucumber scenario
-@ScenarioScope
-public class DynamoDBInstance implements AutoCloseable {
+public class LocalDynamoDBOperations {
     private final DynamoDbAsyncClient dynamoDbClient;
     private final String dynamoDbTableName;
 
-    public DynamoDBInstance(
-            DynamoDBLocalServer dynamoDBLocalServer,
+    public LocalDynamoDBOperations(
+            LocalDynamoDBServer localDynamoDBServer,
             @Value("${dynamodb.tablename}") String dynamoDbTableName
     ) {
-        this.dynamoDbClient = dynamoDBLocalServer.getClient();
+        this.dynamoDbClient = localDynamoDBServer.getClient();
         this.dynamoDbTableName = dynamoDbTableName;
-
-        this.createTable();
-    }
-
-    @Override
-    public void close() throws Exception {
-        this.destroyTable();
     }
 
     @SneakyThrows
-    private void createTable() {
+    public void createTable() {
         final var request = CreateTableRequest.builder()
                 .tableName(dynamoDbTableName)
                 .keySchema(KeySchemaElement.builder()
@@ -63,7 +53,7 @@ public class DynamoDBInstance implements AutoCloseable {
     }
 
     @SneakyThrows
-    private void destroyTable() {
+    public void destroyTable() {
         final var request = DeleteTableRequest.builder()
                 .tableName(dynamoDbTableName)
                 .build();

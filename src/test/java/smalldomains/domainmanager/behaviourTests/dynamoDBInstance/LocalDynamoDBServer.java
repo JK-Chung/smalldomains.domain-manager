@@ -19,12 +19,12 @@ import java.net.URI;
  */
 @Slf4j
 @Component
-class DynamoDBLocalServer implements AutoCloseable {
+class LocalDynamoDBServer implements AutoCloseable {
     private final DynamoDBProxyServer dynamoDbServer;
     private final DynamoDbAsyncClient dynamoDbAsyncClient;
     private final int port;
 
-    public DynamoDBLocalServer() throws Exception {
+    public LocalDynamoDBServer() throws Exception {
         // Local DynamoDB uses sqlite... this property is required to allow DynamoDB to use sqlite
         System.setProperty("sqlite4java.library.path", "native-libs");
 
