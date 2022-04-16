@@ -2,7 +2,6 @@ package smalldomains.domainmanager.behaviourTests.dynamoDBInstance;
 
 import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
 import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -13,9 +12,7 @@ import java.net.ServerSocket;
 import java.net.URI;
 
 /**
- * This bean is responsible for starting up local DynamoDB servers on a random local port. Since this is a PROTOTYPE
- * bean, a new server will be spun-up EACH time this bean is requested from the ApplicationContext. Thus, you can
- * guarantee that each time you get a fresh, clean server each time the AppContext retrieves it.
+ * This bean is responsible for starting up a local DynamoDB servers on a random local port.
  *
  * Exposes a DynamoDBAsyncClient intended for autowiring and overriding its corresponding application bean. Using this
  * bean ensures that tests have no external dependency... the local DynamoDB will always be used
