@@ -19,8 +19,8 @@ public class SmallDomainMapper {
 
     public static Map<String, AttributeValue> toItem(final SmallDomain smallDomain) {
         return Map.of(
-                "small_url", generateStringAttributeValue(smallDomain.getSmallDomain()),
-                "big_url", generateStringAttributeValue(smallDomain.getBigDomain())
+                "small_url", generateStringAttributeValue(smallDomain.smallDomain()),
+                "big_url", generateStringAttributeValue(smallDomain.bigDomain())
         );
     }
 

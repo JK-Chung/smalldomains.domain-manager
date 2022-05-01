@@ -31,7 +31,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class SuccessStepDefs {
 
-    // even though this field isn't used, it should be included to ensure that local DynamoDB is refreshed after every scenario
     private final LocalDynamoDBOperations localDynamoDBOperations;
     private final DynamoDbAsyncClient dynamoClient;
     private final String dynamoDbTableName;

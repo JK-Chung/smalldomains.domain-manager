@@ -17,11 +17,11 @@ public class SmallDomainService {
     private final SmallDomainRepository repository;
 
     public Mono<SmallDomain> createNewSmallDomain(final SmallDomain toSave) throws SmallDomainAlreadyExists {
-        return Mono.fromFuture(repository.getSmallDomain(toSave.getSmallDomain()))
+        return Mono.fromFuture(repository.getSmallDomain(toSave.smallDomain()))
                 .flatMap(optRetrievedSmallDomain -> {
                     if(optRetrievedSmallDomain.isPresent()) {
                         // small domain already exists - don't make another one
-                        return Mono.error(new SmallDomainAlreadyExists(toSave.getSmallDomain()));
+                        return Mono.error(new SmallDomainAlreadyExists(toSave.smallDomain()));
                     } else {
                         // no existing small domain found - we can proceed with its creation
                         return Mono.fromFuture(repository.saveSmallDomain(toSave));

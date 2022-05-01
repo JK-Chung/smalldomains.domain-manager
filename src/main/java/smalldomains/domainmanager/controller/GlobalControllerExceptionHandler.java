@@ -14,6 +14,8 @@ import smalldomains.domainmanager.exception.SmallDomainAlreadyExists;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -62,16 +64,14 @@ public class GlobalControllerExceptionHandler {
     }
 
     private Map<String, String> generateValidationErrors(final WebExchangeBindException ex) {
+        final Function<FieldError, String> toUserFriendlyErrorMessage = fieldError -> Optional.ofNullable(fieldError.getDefaultMessage())
+                .orElseGet(() -> {
+                    log.error("No validation message has been set up for field. Can you set this up to improve UX? {}", fieldError);
+                    return "invalid value";
+                });
+
         return ex.getBindingResult().getFieldErrors().stream()
-                .collect(Collectors.toMap(FieldError::getField, fieldError -> {
-                    final String message = fieldError.getDefaultMessage();
-                    if(message == null) {
-                        log.error("No validation message has been set up for field. Can you set this up to improve UX? {}", fieldError);
-                        return "invalid value";
-                    } else {
-                        return message;
-                    }
-                }));
+                .collect(Collectors.toMap(FieldError::getField, toUserFriendlyErrorMessage));
     }
 
 }
