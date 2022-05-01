@@ -1,13 +1,16 @@
 package smalldomains.domainmanager.controller;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import smalldomains.domainmanager.exception.NoSmallDomainExists;
 import smalldomains.domainmanager.exception.SmallDomainAlreadyExists;
 
@@ -25,15 +28,23 @@ import java.util.stream.Collectors;
  *
  * The ControllerAdvice annotation means that these handlers apply globally - to all controllers. It's really neat!
  */
-@Log4j2
+@Slf4j
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public Map<String, String> handleAllOtherExceptions(ServerHttpRequest request, final Exception ex) {
+        log.error("Encountered exception when processing request", request, ex);
+        return generateErrorBody("Internal Server Error");
+    }
 
     @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(SmallDomainAlreadyExists.class)
     public Map<String, String> handleSmallDomainAlreadyExists(final SmallDomainAlreadyExists ex) {
-        return generateErrorBody(String.format("small domain already exists: %s", ex.getAlreadyExistingDomain()));
+        return generateErrorBody("small domain already exists: %s".formatted(ex.getAlreadyExistingDomain()));
     }
 
     @ResponseBody

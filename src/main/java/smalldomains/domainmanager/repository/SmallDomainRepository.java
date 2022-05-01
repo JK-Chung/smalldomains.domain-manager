@@ -1,6 +1,6 @@
 package smalldomains.domainmanager.repository;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import smalldomains.domainmanager.entity.SmallDomain;
@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Manages all operations (CRUD, etc) regarding the SmallDomains DynamoDB table
  */
-@Log4j2
+@Slf4j
 @Repository
 public class SmallDomainRepository {
     private final DynamoDbAsyncClient client;

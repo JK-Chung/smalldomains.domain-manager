@@ -24,7 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 @Validated
 @RestController
-@RequestMapping("/")
+@RequestMapping("/smalldomains")
 @RequiredArgsConstructor
 public class SmallDomainManagerController {
     private final SmallDomainService smallDomainService;
