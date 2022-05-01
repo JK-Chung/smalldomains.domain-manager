@@ -10,4 +10,5 @@ public class NoSmallDomainExists extends RuntimeException {
         super(nameOfNonExistentDomain + " does not exist as small domain");
         this.nameOfNonExistentDomain = nameOfNonExistentDomain;
     }
+
 }

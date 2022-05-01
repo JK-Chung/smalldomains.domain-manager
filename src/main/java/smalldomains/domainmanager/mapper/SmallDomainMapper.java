@@ -11,10 +11,10 @@ import java.util.Map;
 public class SmallDomainMapper {
 
     public static SmallDomain fromItem(final Map<String, AttributeValue> item) {
-        return SmallDomain.builder()
-                .smallDomain(item.get("small_url").s())
-                .bigDomain(item.get("big_url").s())
-                .build();
+        return new SmallDomain(
+                item.get("small_url").s(),
+                item.get("big_url").s()
+        );
     }
 
     public static Map<String, AttributeValue> toItem(final SmallDomain smallDomain) {

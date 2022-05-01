@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class SuccessStepDefs {
+public class SmallDomainsStepDefs {
 
     private final LocalDynamoDBOperations localDynamoDBOperations;
     private final DynamoDbAsyncClient dynamoClient;
@@ -41,7 +41,7 @@ public class SuccessStepDefs {
     private HttpResponse<String> appResponse;
 
     @Autowired
-    public SuccessStepDefs(
+    public SmallDomainsStepDefs(
             LocalDynamoDBOperations localDynamoDBOperations,
             DynamoDbAsyncClient dynamoClient,
             ObjectMapper objectMapper,
@@ -54,7 +54,7 @@ public class SuccessStepDefs {
         this.dynamoDbTableName = dynamoDbTableName;
         this.objectMapper = objectMapper;
         this.httpClient = httpClient;
-        this.appRequestBuilder = HttpRequest.newBuilder(URI.create("http://localhost:%d/".formatted(appPort)));
+        this.appRequestBuilder = HttpRequest.newBuilder(URI.create("http://localhost:%d/smalldomains".formatted(appPort)));
     }
 
     @Before
@@ -88,10 +88,7 @@ public class SuccessStepDefs {
     @SneakyThrows
     @And("my request is to create a SmallDomain of {word} \\(redirecting to {word})")
     public void myRequestIsToCreateASmallDomainOfSmallRedirectingToLarge(final String small, final String large) {
-        final SmallDomain newSmallDomain = SmallDomain.builder()
-                .smallDomain(small)
-                .bigDomain(large)
-                .build();
+        final SmallDomain newSmallDomain = new SmallDomain(small, large);
         final String smallDomainJson = objectMapper.writeValueAsString(newSmallDomain);
 
         final var request = appRequestBuilder
