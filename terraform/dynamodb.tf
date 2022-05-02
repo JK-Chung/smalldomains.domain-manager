@@ -1,8 +1,8 @@
 resource "aws_dynamodb_table" "small-domain-redirects" {
   name = "small-domain.redirects"
 
-  billing_mode = "PROVISIONED"
-  read_capacity = 1
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 1
   write_capacity = 1
 
   hash_key = "small-url"
