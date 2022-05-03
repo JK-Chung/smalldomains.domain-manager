@@ -9,4 +9,5 @@ jobs:
     uses: ./.github/workflows/deploy_infrastructure_to_specified_env.yml
     with:
       environment: development
+    secrets:
       TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
