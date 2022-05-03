@@ -64,12 +64,9 @@ jobs:
   destroy-stage-infrastructure:
     name: 'Destroy STAGE Infrastructure'
     needs: destroy-stage-application
-    environment: staging
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Placeholder Step
-        run: echo "Destroy Infrastructure on Stage"
+    uses: ./.github/workflows/infrastructure--destroy_stage.yml
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
   deploy-prod-infrastructure:
     name: 'Deploy PROD Infrastructure'
