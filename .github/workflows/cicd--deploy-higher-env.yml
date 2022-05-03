@@ -47,6 +47,10 @@ jobs:
     environment: manual-approval-for-prod
     runs-on: ubuntu-latest
 
+    steps:
+      - name: Manual Approval Confirmed
+        run: echo 'Manual approval for PROD deployment has been granted'
+
   destroy-stage-application:
     name: 'Destroy Application on STAGE'
     needs: require-approval-for-prod-deployment
