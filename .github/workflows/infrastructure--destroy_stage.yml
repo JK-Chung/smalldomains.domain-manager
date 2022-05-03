@@ -2,6 +2,9 @@ name: 'Destroy Staging Infrastructure'
 
 on:
   workflow_call:
+    secrets:
+      TF_API_TOKEN:
+        required: true
 
 jobs:
   destroy-staging-infrastructure:
