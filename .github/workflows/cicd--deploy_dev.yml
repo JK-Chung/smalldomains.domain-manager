@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy-infrastructure:
-    name: 'Deploy Infrastructure'
+    name: 'Deploy DEV Infrastructure'
     uses: ./.github/workflows/infrastructure--deploy_specified_env.yml
     with:
       environment: development
