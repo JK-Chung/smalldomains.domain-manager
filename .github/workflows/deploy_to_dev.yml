@@ -6,7 +6,7 @@ on:
 jobs:
   deploy-infrastructure:
     name: 'Deploy Infrastructure'
-    uses: ./.github/workflows/deploy_infrastructure_to_specified_env.yml
+    uses: ./.github/workflows/infrastructure/deploy_infrastructure_to_specified_env.yml
     with:
       environment: development
     secrets:

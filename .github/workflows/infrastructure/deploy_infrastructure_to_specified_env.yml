@@ -31,6 +31,7 @@ jobs:
             production)   echo "TF_WORKSPACE=smalldomains--domain-manager-prod" >> $GITHUB_ENV;;
             *)            echo "${{ inputs.environment }} is an unrecognised environment"; exit 1;;
           esac
+          echo "Using TF_WORKSPACE of $TF_WORKSPACE"
 
       - name: Checkout
         uses: actions/checkout@v3
