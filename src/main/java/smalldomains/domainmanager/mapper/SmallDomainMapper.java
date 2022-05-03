@@ -12,15 +12,15 @@ public class SmallDomainMapper {
 
     public static SmallDomain fromItem(final Map<String, AttributeValue> item) {
         return new SmallDomain(
-                item.get("small_url").s(),
-                item.get("big_url").s()
+                item.get("small-url").s(),
+                item.get("large-url").s()
         );
     }
 
     public static Map<String, AttributeValue> toItem(final SmallDomain smallDomain) {
         return Map.of(
-                "small_url", generateStringAttributeValue(smallDomain.smallDomain()),
-                "big_url", generateStringAttributeValue(smallDomain.bigDomain())
+                "small-url", generateStringAttributeValue(smallDomain.smallDomain()),
+                "large-url", generateStringAttributeValue(smallDomain.bigDomain())
         );
     }
 

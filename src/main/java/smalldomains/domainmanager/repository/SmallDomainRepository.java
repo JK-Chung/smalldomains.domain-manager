@@ -60,7 +60,7 @@ public class SmallDomainRepository {
     }
 
     private Map<String, AttributeValue> generateKey(final String smallDomain) {
-        return Map.of("small_url", AttributeValue.builder().s(smallDomain).build());
+        return Map.of("small-url", AttributeValue.builder().s(smallDomain).build());
     }
 
     private static Optional<SmallDomain> extractSmallDomainFromItem(GetItemResponse r) {
