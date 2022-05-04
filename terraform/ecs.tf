@@ -12,5 +12,5 @@
 
 resource "aws_ecs_task_definition" "domain-manager" {
   family                = "smalldomains--domain-manager"
-  container_definitions = []
+  container_definitions = jsonencode([{}])
 }
