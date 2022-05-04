@@ -13,10 +13,6 @@ jobs:
     env:
       TF_WORKSPACE: smalldomains--domain-manager-stage
 
-    defaults:
-      run:
-        shell: bash
-
     steps:
       - name: Begin Destruction of Stage Infrastructure
         run: echo "Destroying infrastructure on STAGE environment"
