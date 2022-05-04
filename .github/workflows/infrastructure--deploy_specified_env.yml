@@ -12,12 +12,8 @@ on:
 
 jobs:
   deploy-infrastructure:
-    name: 'Deploy Infrastructure'
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
 
     steps:
       - name: Begin Infrastructure Deployment

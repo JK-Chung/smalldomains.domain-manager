@@ -1,4 +1,4 @@
-name: 'Promote Deployment to higher environments'
+name: 'Promote Deployment to Higher Environments'
 
 on:
   push:
@@ -61,7 +61,6 @@ jobs:
         run: echo "Destroy Application on Stage"
 
   destroy-stage-infrastructure:
-    name: 'Destroy STAGE Infrastructure'
     needs: destroy-stage-application
     uses: ./.github/workflows/infrastructure--destroy_stage.yml
     secrets:
