@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      encoded-ecr_repo_url: ${{ steps.ecr_repo_url.outputs.encoded_ecr_repo_url }}
+      ecr_repo_url: ${{ steps.ecr_repo_url.outputs.ecr_repo_url }}
 
     steps:
       - name: Checkout
@@ -42,10 +42,7 @@ jobs:
         # So, I'm using this hacky workaround... but Github should really let us correct its auto-secret-detection
         # https://github.community/t/environment-url-not-set-because-env-may-contain-secret/153708/23
         run: |
-          ECR_REPO_URL=$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')
-          ENCODED_ECR_REPO_URL=$(echo $ECR_REPO_URL | base64 | base64 ) 
-          echo "::notice title=RetrieveSSMParam::$ECR_REPO_URL"
-          echo "::set-output name=encoded_ecr_repo_url::$ECR_REPO_URL"
+          echo "::set-output name=ecr_repo_url::$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')"
 
   run-automated-tests:
     name: 'Run Automated Tests'
@@ -97,9 +94,8 @@ jobs:
 
       - name: Build, Tag and Push Image to AWS ECR
         env:
-          ENCODED_ECR_REPO_URL: ${{ needs.retrieve-ssm-params.outputs.encoded-ecr_repo_url }}
+          ECR_REPO_URL: ${{ needs.retrieve-ssm-params.outputs.ecr_repo_url }}
           IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
         run: |
-          ECR_REPO_URL=$(echo $ENCODED_ECR_REPO_URL | base64 -d | base64 -d)
           docker build -t $ECR_REPO_URL:$IMAGE_TAG .
           docker push $ECR_REPO_URL:$IMAGE_TAG
