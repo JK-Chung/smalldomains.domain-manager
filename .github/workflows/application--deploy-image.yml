@@ -86,7 +86,7 @@ jobs:
       - name: Create Image Tag
         id: create-image-tag
         run: |
-          IMAGE_TAG=${{ github.event.repository.name }}-$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}
+          IMAGE_TAG=$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}
           echo "::notice title=Using Artifact Image Tag::$IMAGE_TAG"
           echo "::set-output name=image_tag::$IMAGE_TAG"
 
@@ -95,5 +95,5 @@ jobs:
           ECR_REPO_URL: ${{ needs.retrieve-ssm-params.outputs.ecr_repo_url }}
           IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
         run: |
-          docker build -t ${{ env.ECR_REPO_URL }}:example .
-          docker push ${{ env.ECR_REPO_URL }}:${{ env.IMAGE_TAG }}
+          docker build -t $ECR_REPO_URL:$IMAGE_TAG .
+          docker push $ECR_REPO_URL:$IMAGE_TAG
