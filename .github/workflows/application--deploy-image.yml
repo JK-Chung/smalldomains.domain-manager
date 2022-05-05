@@ -95,5 +95,5 @@ jobs:
           ECR_REPO_URL: ${{ needs.retrieve-ssm-params.outputs.ecr_repo_url }}
           IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
         run: |
-          docker build -t $ECR_REPO_URL:example .
-          docker push $ECR_REPO_URL:$IMAGE_TAG
+          docker build -t ${{ env.ECR_REPO_URL }}:example .
+          docker push ${{ env.ECR_REPO_URL }}:${{ env.IMAGE_TAG }}
