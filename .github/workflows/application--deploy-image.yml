@@ -9,6 +9,11 @@ on:
         type: string
 
 # TODO update environment
+
+# Required to use Github OIDC Token with AWS
+permissions:
+  id-token: write
+
 env:
   AWS_REGION: eu-west-1
 
