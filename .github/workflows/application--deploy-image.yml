@@ -42,7 +42,11 @@ jobs:
         # So, I'm using this hacky workaround... but Github should really let us correct its auto-secret-detection
         # https://github.community/t/environment-url-not-set-because-env-may-contain-secret/153708/23
         run: |
-          echo "::set-output name=ecr_repo_url::$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')"
+          ECR_REPO_URL=$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')
+          echo "::set-output name=ecr_repo_url::$ECR_REPO_URL"
+
+      - name: Print
+        run: echo ${{ steps.ecr_repo_url.outputs.ecr_repo_url }}
 
   run-automated-tests:
     name: 'Run Automated Tests'
