@@ -9,6 +9,8 @@ on:
         type: string
 
 # TODO update environment
+env:
+  AWS_REGION: eu-west-1
 
 jobs:
   retrieve-ssm-params:
