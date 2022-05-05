@@ -40,7 +40,7 @@ jobs:
         id: ecr_repo_url
         run: |
           ECR_REPO_URL=$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')
-          echo "::notice title=Retrieved SSM Param describing ECR Repository URL::$ECR_REPO_URL"
+          echo "::notice title=RetrieveSSMParam::$ECR_REPO_URL"
           echo "::set-output name=ecr_repo_url::$ECR_REPO_URL"
 
   run-automated-tests:
