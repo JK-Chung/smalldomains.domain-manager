@@ -49,9 +49,9 @@ jobs:
       - name: Set Environment Variables
         run: |
           case ${{ inputs.environment }} in
-            development)  echo "AWS_ACCOUNT_ID=${{ secrets.DEV_AWS_ACCOUNT_ID }}" >> $GITHUB_ENV;;
-            staging)      echo "AWS_ACCOUNT_ID=${{ secrets.STAGE_AWS_ACCOUNT_ID }}" >> $GITHUB_ENV;;
-            production)   echo "AWS_ACCOUNT_ID=${{ secrets.PROD_AWS_ACCOUNT_ID }}" >> $GITHUB_ENV;;
+            development)  echo "AWS_ACCOUNT_ID=${{ secrets[DEV_AWS_ACCOUNT_ID] }}" >> $GITHUB_ENV;;
+            staging)      echo "AWS_ACCOUNT_ID=${{ secrets[STAGE_AWS_ACCOUNT_ID] }}" >> $GITHUB_ENV;;
+            production)   echo "AWS_ACCOUNT_ID=${{ secrets[PROD_AWS_ACCOUNT_ID] }}" >> $GITHUB_ENV;;
             *)            echo "${{ inputs.environment }} is an unrecognised environment"; exit 1;;
           esac
 
