@@ -17,7 +17,7 @@ env:
 jobs:
   run-automated-tests:
     name: 'Run Automated Tests'
-    environment: ${{ env.environment }}
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +36,7 @@ jobs:
   push-to-ecr:
     name: 'Push Dockerised Application to ECR'
     needs: run-automated-tests
-    environment: ${{ env.environment }}
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
     steps:
