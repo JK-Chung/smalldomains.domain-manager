@@ -1,4 +1,7 @@
+name: 'Push Dockerised Application to ECR'
+
 on:
+  # Caller workflows must also have the "id-token: write" permission so that it can be used here
   workflow_call:
     inputs:
       environment:
@@ -14,6 +17,7 @@ env:
 
 jobs:
   push-to-ecr:
+    name: 'Push Dockerised Application to ECR'
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
@@ -22,21 +26,21 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Configure DEV AWS credentials
-        if: ${{ env.environment == 'development'}}
+        if: ${{ inputs.environment == 'development'}}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::646359775865:role/RoleForGithubActions
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Configure STAGE AWS credentials
-        if: ${{ env.environment == 'staging'}}
+        if: ${{ inputs.environment == 'staging'}}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::471118269989:role/RoleForGithubActions
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Configure PROD AWS credentials
-        if: ${{ env.environment == 'production'}}
+        if: ${{ inputs.environment == 'production'}}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::787939685470:role/RoleForGithubActions

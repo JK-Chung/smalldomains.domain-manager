@@ -26,10 +26,17 @@ jobs:
       - name: Run Automated Tests
         run: ./mvnw verify
 
-  dev-deployment:
-    name: 'Dev Deployment'
+  push-docker-image:
+    name: 'Push Docker Image to ECR'
     needs: run-automated-tests
-    uses: ./.github/workflows/cicd--deploy_specified_env.yml
+    uses: ./.github/workflows/application--deploy_image_specified_env.yml
+    with:
+      environment: development
+
+  deploy-infrastructure:
+    name: 'Deploy DEV Infrastructure'
+    needs: push-docker-image
+    uses: ./.github/workflows/infrastructure--deploy_specified_env.yml
     with:
       environment: development
     secrets:
