@@ -18,40 +18,6 @@ env:
   AWS_REGION: eu-west-1
 
 jobs:
-  retrieve-ssm-params:
-    name: 'Retrieve Required SSM Params'
-    environment: development
-    runs-on: ubuntu-latest
-
-    outputs:
-      encoded_ecr_repo_url: ${{ steps.ecr_repo_url.outputs.encoded_ecr_repo_url }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: arn:aws:iam::646359775865:role/RoleForGithubActions
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Retrieve ECR Repository URL
-        id: ecr_repo_url
-        # I'm using this weird double-encoding because Github thinks that ECR_REPO_URL is a secret and doesn't let us set it as output
-        # So, I'm using this hacky workaround... but Github should really let us correct its auto-secret-detection
-        # https://github.community/t/environment-url-not-set-because-env-may-contain-secret/153708/23
-        run: |
-          set -o pipefail
-          ECR_REPO_URL=$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')
-          ENCODED_ECR_REPO_URL=$(echo $ECR_REPO_URL | base64 | base64 )
-          echo $ENCODED_ECR_REPO_URL
-          echo "::set-output name=encoded_ecr_repo_url::$ENCODED_ECR_REPO_URL"
-
-      #TODO remove
-      - name: Print
-        run: echo ${{ steps.ecr_repo_url.outputs.ecr_repo_url }}
-
   run-automated-tests:
     name: 'Run Automated Tests'
     environment: development
@@ -72,9 +38,7 @@ jobs:
 
   push-to-ecr:
     name: 'Push Dockerised Application to ECR'
-    needs:
-      - run-automated-tests
-      - retrieve-ssm-params
+    needs: run-automated-tests
     environment: development
     runs-on: ubuntu-latest
 
@@ -102,11 +66,9 @@ jobs:
 
       - name: Build, Tag and Push Image to AWS ECR
         env:
-          ENCODED_ECR_REPO_URL: ${{ needs.retrieve-ssm-params.outputs.encoded_ecr_repo_url }}
           IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
         run: |
-          echo $ENCODED_ECR_REPO_URL
-          echo ${{ env.ENCODED_ECR_REPO_URL }}
-          ECR_REPO_URL=$(echo $ENCODED_ECR_REPO_URL | base64 -d | base64 -d)
+          set -o pipefail
+          ECR_REPO_URL=$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')
           docker build -t $ECR_REPO_URL:$IMAGE_TAG .
           docker push $ECR_REPO_URL:$IMAGE_TAG
