@@ -3,6 +3,11 @@ name: 'Deploy to Development'
 on:
   push:
 
+# Required to use Github OIDC Token with AWS
+permissions:
+  id-token: write
+
+
 jobs:
   push-docker-image:
     name: 'Push Docker Image to ECR'
