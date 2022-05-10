@@ -44,7 +44,8 @@ jobs:
         run: |
           set -o pipefail
           ECR_REPO_URL=$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')
-          ENCODED_ECR_REPO_URL=$(echo $ECR_REPO_URL | base64 )
+          ENCODED_ECR_REPO_URL=$(echo $ECR_REPO_URL | base64 | base64 )
+          echo $ENCODED_ECR_REPO_URL
           echo "::set-output name=encoded_ecr_repo_url::$ENCODED_ECR_REPO_URL"
 
       #TODO remove
@@ -104,6 +105,8 @@ jobs:
           ENCODED_ECR_REPO_URL: ${{ needs.retrieve-ssm-params.outputs.encoded_ecr_repo_url }}
           IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
         run: |
-          ECR_REPO_URL=$(echo $ENCODED_ECR_REPO_URL | base64 -d )
+          echo $ENCODED_ECR_REPO_URL
+          echo ${{ env.ENCODED_ECR_REPO_URL }}
+          ECR_REPO_URL=$(echo $ENCODED_ECR_REPO_URL | base64 -d | base64 -d)
           docker build -t $ECR_REPO_URL:$IMAGE_TAG .
           docker push $ECR_REPO_URL:$IMAGE_TAG
