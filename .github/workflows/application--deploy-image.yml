@@ -46,19 +46,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set Environment Variables
-        run: |
-          case ${{ inputs.environment }} in
-            development)  echo "AWS_ACCOUNT_ID=${{ secrets["DEV_AWS_ACCOUNT_ID"] }}" >> $GITHUB_ENV;;
-            staging)      echo "AWS_ACCOUNT_ID=${{ secrets["STAGE_AWS_ACCOUNT_ID"] }}" >> $GITHUB_ENV;;
-            production)   echo "AWS_ACCOUNT_ID=${{ secrets["PROD_AWS_ACCOUNT_ID"] }}" >> $GITHUB_ENV;;
-            *)            echo "${{ inputs.environment }} is an unrecognised environment"; exit 1;;
-          esac
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/RoleForGithubActions
+          role-to-assume: arn:aws:iam::${{ secrets[format('{0}_AWS_ACCOUNT_ID', inputs.environment)] }}:role/RoleForGithubActions
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
