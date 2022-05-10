@@ -39,21 +39,29 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
-    env:
-      AWS_ACCOUNT_ID: ${{ secrets[format('{0}_AWS_ACCOUNT_ID', inputs.environment)] }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: print env
-        run: |
-          echo ${{ env.AWS_ACCOUNT_ID }}
-
-      - name: Configure AWS credentials
+      - name: Configure DEV AWS credentials
+        if: ${{ env.environment == 'development'}}
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/RoleForGithubActions
+          role-to-assume: arn:aws:iam::646359775865:role/RoleForGithubActions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure STAGE AWS credentials
+        if: ${{ env.environment == 'staging'}}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::471118269989:role/RoleForGithubActions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure PROD AWS credentials
+        if: ${{ env.environment == 'production'}}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::787939685470:role/RoleForGithubActions
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
