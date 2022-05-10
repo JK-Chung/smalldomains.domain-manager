@@ -1,0 +1,36 @@
+name: 'Deploy to Development'
+
+on:
+  push:
+
+# Required to use Github OIDC Token with AWS
+permissions:
+  id-token: write
+
+jobs:
+  run-automated-tests:
+    name: 'Run Automated Tests'
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run Automated Tests
+        run: ./mvnw verify
+
+  dev-deployment:
+    name: 'Dev Deployment'
+    needs: run-automated-tests
+    uses: ./.github/workflows/cicd--deploy_specified_env.yml
+    with:
+      environment: development
+    secrets:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}

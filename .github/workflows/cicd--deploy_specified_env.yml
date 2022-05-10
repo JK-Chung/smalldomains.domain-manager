@@ -1,25 +1,30 @@
-name: 'Deploy to Development'
-
 on:
-  push:
+  # Caller workflows must also have the "id-token: write" permission so that this can authenticate against AWS
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      TF_API_TOKEN:
+        required: true
 
 # Required to use Github OIDC Token with AWS
 permissions:
   id-token: write
-
 
 jobs:
   push-docker-image:
     name: 'Push Docker Image to ECR'
     uses: ./.github/workflows/application--deploy_image_specified_env.yml
     with:
-      environment: development
+      environment: ${{ inputs.environment }}
 
   deploy-infrastructure:
-    name: 'Deploy DEV Infrastructure'
+    name: 'Deploy Infrastructure'
     needs: push-docker-image
     uses: ./.github/workflows/infrastructure--deploy_specified_env.yml
     with:
-      environment: development
+      environment: ${{ inputs.environment }}
     secrets:
       TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}

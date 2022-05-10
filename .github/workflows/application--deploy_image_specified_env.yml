@@ -1,5 +1,3 @@
-name: 'Push Dockerised Application to ECR'
-
 on:
   # Caller workflows must also have the "id-token: write" permission so that it can be used here
   workflow_call:
@@ -16,27 +14,7 @@ env:
   AWS_REGION: eu-west-1
 
 jobs:
-  run-automated-tests:
-    name: 'Run Automated Tests'
-    environment: ${{ inputs.environment }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Run Automated Tests
-        run: ./mvnw verify
-
   push-to-ecr:
-    name: 'Push Dockerised Application to ECR'
-    needs: run-automated-tests
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
