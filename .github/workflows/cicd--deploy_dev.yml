@@ -17,6 +17,7 @@ jobs:
 
   deploy-infrastructure:
     name: 'Deploy DEV Infrastructure'
+    needs: push-docker-image
     uses: ./.github/workflows/infrastructure--deploy_specified_env.yml
     with:
       environment: development

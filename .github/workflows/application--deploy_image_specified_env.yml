@@ -39,6 +39,9 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets[format('{0}_AWS_ACCOUNT_ID', inputs.environment)] }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -46,7 +49,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ secrets[format('{0}_AWS_ACCOUNT_ID', inputs.environment)] }}:role/RoleForGithubActions
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/RoleForGithubActions
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
