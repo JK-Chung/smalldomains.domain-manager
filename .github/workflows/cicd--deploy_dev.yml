@@ -4,6 +4,12 @@ on:
   push:
 
 jobs:
+  push-docker-image:
+    name: 'Push Docker Image to ECR'
+    uses: ./.github/workflows/application--deploy_image_specified_env.yml
+    with:
+      environment: development
+
   deploy-infrastructure:
     name: 'Deploy DEV Infrastructure'
     uses: ./.github/workflows/infrastructure--deploy_specified_env.yml

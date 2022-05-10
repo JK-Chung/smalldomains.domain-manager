@@ -1,14 +1,11 @@
 name: 'Push Dockerised Application to ECR'
 
 on:
-  push: #TODO remove
   workflow_call:
     inputs:
       environment:
         required: true
         type: string
-
-# TODO update environment
 
 # Required to use Github OIDC Token with AWS
 permissions:
@@ -20,7 +17,7 @@ env:
 jobs:
   run-automated-tests:
     name: 'Run Automated Tests'
-    environment: development
+    environment: ${{ env.environment }}
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +36,7 @@ jobs:
   push-to-ecr:
     name: 'Push Dockerised Application to ECR'
     needs: run-automated-tests
-    environment: development
+    environment: ${{ env.environment }}
     runs-on: ubuntu-latest
 
     steps:
