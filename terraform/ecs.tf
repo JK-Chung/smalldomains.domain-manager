@@ -12,7 +12,7 @@
 
 resource "aws_ecs_task_definition" "domain-manager" {
   family                   = "smalldomains--domain-manager"
-  required_compatibilities = ["EC2", "FARGATE"]
+  requires_compatibilities = ["EC2", "FARGATE"]
   cpu                      = 0.25
   memory                   = 256
   # TODO make IAM role for task execution_role_arn =
@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "domain-manager" {
   container_definitions = jsonencode([
     {
       name      = "small-domains--domain-manager"
-      image     = format("%s:%s", data.aws_ssm_parameter.ecr_repo_url.value, data.aws_ssm_parameter.latest-docker-tag)
+      image     = format("%s:%s", data.aws_ssm_parameter.ecr_repo_url.value, data.aws_ssm_parameter.latest-docker-tag.value)
       essential = true
       portMappings = [
         {
