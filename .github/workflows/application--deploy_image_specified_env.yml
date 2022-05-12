@@ -67,17 +67,17 @@ jobs:
           docker push $ECR_REPO_URL:$IMAGE_TAG
 
       - name: Update SSM Param with Newly Pushed Tag
-          env:
-            IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
-          run: |
-            set -o pipefail
-            SSM_PARAM_NAME=smalldomains/domain-manager/latest-docker-tag
-            
-            aws ssm put-parameter --name $SSM_PARAM_NAME --value $IMAGE_TAG \
-              --description "The tag of the most recently pushed Docker image" \
-              --type String --overwrite
-            
-            aws ssm add-tags-to-resource --resource-type Parameter --resource-id $SSM_PARAM_NAME \
-              --tags  Key=project,Value=small-domains \ 
-                      Key=managed_by,Value=cicd \
-                      Key=github_repo,Value=smalldomains.domain-manager
+        env:
+          IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
+        run: |
+          set -o pipefail
+          SSM_PARAM_NAME=smalldomains/domain-manager/latest-docker-tag
+          
+          aws ssm put-parameter --name $SSM_PARAM_NAME --value $IMAGE_TAG \
+            --description "The tag of the most recently pushed Docker image" \
+            --type String --overwrite
+          
+          aws ssm add-tags-to-resource --resource-type Parameter --resource-id $SSM_PARAM_NAME \
+            --tags  Key=project,Value=small-domains \ 
+                    Key=managed_by,Value=cicd \
+                    Key=github_repo,Value=smalldomains.domain-manager
