@@ -20,8 +20,8 @@ resource "aws_ecs_task_definition" "domain-manager" {
 
   container_definitions = jsonencode([
     {
-      name = "small-domains--domain-manager"
-      image = format("%s:%s", data.aws_ssm_parameter.ecr_repo_url.value, data.aws_ssm_parameter.latest-docker-tag)
+      name      = "small-domains--domain-manager"
+      image     = format("%s:%s", data.aws_ssm_parameter.ecr_repo_url.value, data.aws_ssm_parameter.latest-docker-tag)
       essential = true
       portMappings = [
         {
