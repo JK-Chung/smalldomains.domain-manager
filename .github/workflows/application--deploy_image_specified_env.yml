@@ -71,7 +71,7 @@ jobs:
           IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
         run: |
           set -o pipefail
-          SSM_PARAM_NAME=smalldomains/domain-manager/latest-docker-tag
+          SSM_PARAM_NAME=/smalldomains/domain-manager/latest-docker-tag
           
           aws ssm put-parameter --name $SSM_PARAM_NAME --value $IMAGE_TAG \
             --description "The tag of the most recently pushed Docker image" \
