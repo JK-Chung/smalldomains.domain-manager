@@ -78,6 +78,6 @@ jobs:
             --type String --overwrite
           
           aws ssm add-tags-to-resource --resource-type Parameter --resource-id $SSM_PARAM_NAME \
-            --tags  Key=project,Value=small-domains \ 
+            --tags  Key=project,Value=small-domains \
                     Key=managed_by,Value=cicd \
                     Key=github_repo,Value=smalldomains.domain-manager

@@ -27,7 +27,7 @@ class LocalDynamoDBServer implements AutoCloseable {
 
     public LocalDynamoDBServer() throws Exception {
         // Local DynamoDB uses sqlite... this property is required to allow DynamoDB to use sqlite
-        System.setProperty("sqlite4java.library.path", "native-libs");
+        System.setProperty("sqlite4java.library.path", ".native-libs");
 
         this.port = findAvailablePort();
         final String availablePort = String.valueOf(this.port);
