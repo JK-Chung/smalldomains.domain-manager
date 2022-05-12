@@ -54,7 +54,7 @@ public class SmallDomainRepository {
                     if (possibleException == null) {
                         log.info("successfully saved new small domain {}", newSmallDomain);
                     } else {
-                        log.error("unable to save {} due to exception {}", newSmallDomain, possibleException);
+                        log.error("unable to save {} due to exception", newSmallDomain, possibleException);
                     }
                 });
     }

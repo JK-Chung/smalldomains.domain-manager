@@ -24,7 +24,7 @@ jobs:
           java-version: '17'
 
       - name: Run Automated Tests
-        run: ./mvnw verify
+        run: ./mvnw verify --no-transfer-progress
 
   push-docker-image:
     name: 'Push Docker Image to ECR'

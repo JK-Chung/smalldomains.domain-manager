@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  *  * Validating user input
  *
  *  NOT responsible for:
- *   * Exception handling and error handling (that is done by the global ControllerAdvice
+ *   * Exception handling and error handling (that is done by the global ControllerAdvice)
  */
 @Validated
 @RestController

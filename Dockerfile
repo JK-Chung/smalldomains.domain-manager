@@ -10,7 +10,7 @@ COPY mvnw pom.xml ./
 COPY src ./src
 
 # Create JAR package (don't need to run tests again)
-RUN ./mvnw package -DskipTests
+RUN ./mvnw package -DskipTests --no-transfer-progress
 
 # PREPARE RUNNABLE
 FROM openjdk:17-alpine as RUN

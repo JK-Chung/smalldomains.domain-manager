@@ -11,6 +11,23 @@
 # FROM SSM, retrieve, ECS_REPOSITORY, ECS_CLUSTER
 
 resource "aws_ecs_task_definition" "domain-manager" {
-  family                = "smalldomains--domain-manager"
-  container_definitions = jsonencode([{}])
+  family                   = "smalldomains--domain-manager"
+  required_compatibilities = ["EC2", "FARGATE"]
+  cpu                      = 0.25
+  memory                   = 256
+  # TODO make IAM role for task execution_role_arn =
+  task_role_arn = data.aws_ssm_parameter.ecs-instance-role-arn.value
+
+  container_definitions = jsonencode([
+    {
+      name = "small-domains--domain-manager"
+      image = format("%s:%s", data.aws_ssm_parameter.ecr_repo_url.value, data.aws_ssm_parameter.latest-docker-tag)
+      essential = true
+      portMappings = [
+        {
+          containerPort = 8080
+        }
+      ]
+    }
+  ])
 }
