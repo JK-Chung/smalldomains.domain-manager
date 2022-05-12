@@ -7,7 +7,7 @@ data "aws_ssm_parameter" "ecs-ec2-cluster-name" {
 }
 
 data "aws_ssm_parameter" "ecs-instance-role-arn" {
-  name = "/iam/ecs/ecs-instance-role"
+  name = "/iam/ecs/ecs-container-agent-role"
 }
 
 data "aws_ssm_parameter" "latest-docker-tag" {
