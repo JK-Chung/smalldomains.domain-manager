@@ -32,13 +32,6 @@ jobs:
           role-to-assume: arn:aws:iam::646359775865:role/RoleForGithubActions
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Configure STAGE AWS credentials
-        if: ${{ inputs.environment == 'staging'}}
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: arn:aws:iam::471118269989:role/RoleForGithubActions
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Configure PROD AWS credentials
         if: ${{ inputs.environment == 'production'}}
         uses: aws-actions/configure-aws-credentials@v1
