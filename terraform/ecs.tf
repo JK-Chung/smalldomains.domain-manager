@@ -1,27 +1,27 @@
 locals {
   small-domain-domain-manager-container-name = "small-domains--domain-manager"
-  small-domain-domain-manager-exposed-port = 8080
+  small-domain-domain-manager-exposed-port   = 8080
 }
 
 resource "aws_ecs_service" "domain-manager" {
-  name    = "smalldomains--domain-manager"
-  launch_type = "EC2"
-  cluster = data.aws_ssm_parameter.ecs-ec2-cluster-arn
+  name            = "smalldomains--domain-manager"
+  launch_type     = "EC2"
+  cluster         = data.aws_ssm_parameter.ecs-ec2-cluster-arn
   task_definition = aws_ecs_task_definition.domain-manager.family
 
-  desired_count = var.environment == "dev" ? 1 : 2
+  desired_count                      = var.environment == "dev" ? 1 : 2
   deployment_minimum_healthy_percent = 100
-  deployment_maximum_percent = 200
+  deployment_maximum_percent         = 200
 
   ordered_placement_strategy {
-    type = "spread"
+    type  = "spread"
     field = "host"
   }
 
   load_balancer {
     target_group_arn = data.aws_ssm_parameter.target-group-arn.value
-    container_name = local.small-domain-domain-manager-container-name
-    container_port = local.small-domain-domain-manager-exposed-port
+    container_name   = local.small-domain-domain-manager-container-name
+    container_port   = local.small-domain-domain-manager-exposed-port
   }
 
   health_check_grace_period_seconds = 30
