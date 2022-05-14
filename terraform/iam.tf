@@ -1,5 +1,5 @@
-resource "aws_iam_role" "execution_role_domain_manager" {
-  name = "ExecutionRoleForSmallDomainsDomainManager"
+resource "aws_iam_role" "task_role_domain_manager" {
+  name = "TaskRoleForSmallDomainsDomainManager"
 
   managed_policy_arns = [
     # An AWS-Managed Policy designed that gives necessary authorisations to the ECR
