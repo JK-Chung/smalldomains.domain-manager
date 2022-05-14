@@ -1,14 +1,31 @@
-#AWS_REGION: MY_AWS_REGION                   # set this to your preferred AWS region, e.g. us-west-1
-#ECR_REPOSITORY: MY_ECR_REPOSITORY           # set this to your Amazon ECR repository name
-#ECS_SERVICE: MY_ECS_SERVICE                 # set this to your Amazon ECS service name
-#ECS_CLUSTER: MY_ECS_CLUSTER                 # set this to your Amazon ECS cluster name
-#ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
-## file, e.g. .aws/task-definition.json
-#CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
-## containerDefinitions section of your task definition
+locals {
+  small-domain-domain-manager-container-name = "small-domains--domain-manager"
+  small-domain-domain-manager-exposed-port = 8080
+}
 
-# DEPLOY ECS_TASK_DEFINITION, ECS_SERVICE
-# FROM SSM, retrieve, ECS_REPOSITORY, ECS_CLUSTER
+resource "aws_ecs_service" "domain-manager" {
+  name    = "smalldomains--domain-manager"
+  launch_type = "EC2"
+  cluster = data.aws_ssm_parameter.ecs-ec2-cluster-arn
+  task_definition = aws_ecs_task_definition.domain-manager.family
+
+  desired_count = var.environment == "dev" ? 1 : 2
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent = 200
+
+  ordered_placement_strategy {
+    type = "spread"
+    field = "host"
+  }
+
+  load_balancer {
+    target_group_arn = data.aws_ssm_parameter.target-group-arn.value
+    container_name = local.small-domain-domain-manager-container-name
+    container_port = local.small-domain-domain-manager-exposed-port
+  }
+
+  health_check_grace_period_seconds = 30
+}
 
 resource "aws_ecs_task_definition" "domain-manager" {
   family                   = "smalldomains--domain-manager"
@@ -16,19 +33,31 @@ resource "aws_ecs_task_definition" "domain-manager" {
   network_mode             = "awsvpc"
   cpu                      = 256
   memory                   = 256
-  # TODO make IAM role for task execution_role_arn =
-  task_role_arn = data.aws_ssm_parameter.ecs-instance-role-arn.value
+  task_execution_role_arn  = aws_iam_role.execution_role_domain_manager.arn
+  task_role_arn            = data.aws_ssm_parameter.ecs-instance-role-arn.value
 
   container_definitions = jsonencode([
     {
-      name      = "small-domains--domain-manager"
+      name      = local.small-domain-domain-manager-container-name
       image     = format("%s:%s", data.aws_ssm_parameter.ecr_repo_url.value, data.aws_ssm_parameter.latest-docker-tag.value)
       essential = true
       portMappings = [
         {
-          containerPort = 8080
+          containerPort = local.small-domain-domain-manager-exposed-port
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.domainmanager.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "domain-manager"
+        }
+      }
     }
   ])
+}
+
+resource "aws_cloudwatch_log_group" "domainmanager" {
+  name = "small-domains--domain-manager"
 }
