@@ -33,8 +33,8 @@ resource "aws_ecs_task_definition" "domain-manager" {
   network_mode             = "awsvpc"
   cpu                      = 256
   memory                   = 256
-  task_execution_role_arn  = aws_iam_role.execution_role_domain_manager.arn
-  task_role_arn            = data.aws_ssm_parameter.ecs-instance-role-arn.value
+  task_role_arn            = aws_iam_role.execution_role_domain_manager.arn
+  execution_role_arn       = data.aws_ssm_parameter.ecs-instance-role-arn.value
 
   container_definitions = jsonencode([
     {
