@@ -38,7 +38,7 @@ resource "aws_iam_role" "task_role_domain_manager" {
 
 resource "aws_iam_role_policy" "rw_dynamodb" {
   name = "RW_DynamoDB_SmallDomainRedirects"
-  role = aws_iam_role.execution_role_domain_manager.id
+  role = aws_iam_role.task_role_domain_manager.id
 
   policy = jsonencode({
     Version = "2012-10-17"

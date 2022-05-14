@@ -6,7 +6,7 @@ locals {
 resource "aws_ecs_service" "domain-manager" {
   name            = "smalldomains--domain-manager"
   launch_type     = "EC2"
-  cluster         = data.aws_ssm_parameter.ecs-ec2-cluster-arn
+  cluster         = data.aws_ssm_parameter.ecs-ec2-cluster-arn.value
   task_definition = aws_ecs_task_definition.domain-manager.family
 
   desired_count                      = var.environment == "dev" ? 1 : 2
