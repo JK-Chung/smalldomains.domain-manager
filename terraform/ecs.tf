@@ -15,7 +15,7 @@ resource "aws_ecs_service" "domain-manager" {
 
   ordered_placement_strategy {
     type  = "spread"
-    field = "host"
+    field = "attribute:ecs.availability-zone"
   }
 
   load_balancer {
