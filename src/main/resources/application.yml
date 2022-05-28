@@ -1,3 +1,9 @@
 dynamodb:
   region: eu-west-1
   tablename: small-domain.redirects
+
+management:
+  endpoints:
+    web:
+      # move all actuator endpoints away from /actuator to just /
+      base-path: /

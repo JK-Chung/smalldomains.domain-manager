@@ -6,10 +6,7 @@ import org.springframework.stereotype.Repository;
 import smalldomains.domainmanager.entity.SmallDomain;
 import smalldomains.domainmanager.mapper.SmallDomainMapper;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -56,6 +53,22 @@ public class SmallDomainRepository {
                     } else {
                         log.error("unable to save {} due to exception", newSmallDomain, possibleException);
                     }
+                });
+    }
+
+    public CompletableFuture<Boolean> isTableStillAvailable() {
+        final var request = DescribeTableRequest.builder()
+                .tableName(tableName)
+                .build();
+
+        return client.describeTable(request)
+                .thenApply(DescribeTableResponse::table)
+                .thenApply(TableDescription::tableStatus)
+                .thenApply(TableStatus.ACTIVE::equals)
+                .exceptionally(exception -> {
+                    // this will also handle the case that the table does not exist at all (ResourceNotFoundException)
+                    log.error("Encountered the following exception when checking access to table {}", tableName, exception);
+                    return false;
                 });
     }
 

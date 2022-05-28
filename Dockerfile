@@ -14,7 +14,12 @@ RUN ./mvnw package -DskipTests --no-transfer-progress
 
 # PREPARE RUNNABLE
 FROM openjdk:17-alpine as RUN
+
+ARG ENVIRONMENT
+ENV ENVIRONMENT ${ENVIRONMENT}
+
 WORKDIR /app
 COPY --from=BUILDER /app/target/domain-manager.jar ./
+
 EXPOSE 8080
-CMD ["java", "-jar", "domain-manager.jar"]
+CMD ["java", "-jar", "-Dspring.profiles.active=${ENVIRONMENT}", "domain-manager.jar"]
