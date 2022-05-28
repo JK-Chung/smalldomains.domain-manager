@@ -21,7 +21,7 @@ resource "aws_iam_role_policy_attachment" "ecr_permissions" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_iam_policy" "rw_dynamodb" {
+resource "aws_iam_role_policy" "rw_dynamodb" {
   name = "RW_DynamoDB_SmallDomainRedirects"
   role = aws_iam_role.task_role_domain_manager.id
 
