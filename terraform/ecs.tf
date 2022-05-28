@@ -25,8 +25,9 @@ resource "aws_ecs_service" "domain-manager" {
   }
 
   network_configuration {
-    subnets         = split(",", data.aws_ssm_parameter.public_subnet_ids.value)
-    security_groups = [data.aws_ssm_parameter.sg_for_ecs_services.value]
+    subnets          = split(",", data.aws_ssm_parameter.public_subnet_ids.value)
+    security_groups  = [data.aws_ssm_parameter.sg_for_ecs_services.value]
+    assign_public_ip = true
   }
 
   health_check_grace_period_seconds = 30
