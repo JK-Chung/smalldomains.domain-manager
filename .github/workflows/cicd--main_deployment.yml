@@ -24,9 +24,6 @@ jobs:
   push-docker-image:
     name: 'Push Docker Image to ECR'
     needs: is-terraform-code-formatted
-    environment: production
-    runs-on: ubuntu-latest
-
     uses: ./.github/workflows/push_image.yml
     with:
       environment: production
@@ -34,9 +31,6 @@ jobs:
   deploy-prod-application:
     name: 'Deploy Application to PROD'
     needs: push-docker-image
-    environment: production
-    runs-on: ubuntu-latest
-
     uses: ./.github/workflows/deploy_infrastructure.yml
     with:
       environment: production

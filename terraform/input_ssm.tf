@@ -15,5 +15,5 @@ data "aws_ssm_parameter" "latest-docker-tag" {
 }
 
 data "aws_ssm_parameter" "target-group-arn" {
-  name = "/smalldomains/domain-manager/elb-target-group"
+  name = "/elb/target-groups/smalldomains/domain-manager"
 }
