@@ -24,6 +24,11 @@ resource "aws_ecs_service" "domain-manager" {
     container_port   = local.small-domain-domain-manager-exposed-port
   }
 
+  network_configuration {
+    subnets         = split(",", data.aws_ssm_parameter.public_subnet_ids.value)
+    security_groups = [data.aws_ssm_parameter.sg_for_ecs_services.value]
+  }
+
   health_check_grace_period_seconds = 30
 }
 

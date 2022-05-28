@@ -17,3 +17,15 @@ data "aws_ssm_parameter" "latest-docker-tag" {
 data "aws_ssm_parameter" "target-group-arn" {
   name = "/elb/target-groups/smalldomains/domain-manager"
 }
+
+data "aws_ssm_parameter" "sg_for_ecs_services" {
+  name = "/sg/ecs-services/allow-load-balancer-ingress-only"
+}
+
+data "aws_ssm_parameter" "public_subnet_ids" {
+  name = "/vpc/public_subnets"
+}
+
+data "aws_ssm_parameter" "vpc_id" {
+  name = "/vpc/main"
+}
