@@ -15,6 +15,7 @@ RUN ./mvnw package -DskipTests --no-transfer-progress
 # PREPARE RUNNABLE
 FROM openjdk:17-alpine as RUN
 
+# ENVIRONMENT variable will configure the application
 ARG ENVIRONMENT
 ENV ENVIRONMENT ${ENVIRONMENT}
 
