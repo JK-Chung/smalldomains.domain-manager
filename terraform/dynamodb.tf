@@ -18,7 +18,7 @@ resource "aws_dynamodb_table" "small-domain-redirects" {
   }
 
   point_in_time_recovery {
-    enabled = false
+    enabled = var.environment == "prod"
   }
 
 }
