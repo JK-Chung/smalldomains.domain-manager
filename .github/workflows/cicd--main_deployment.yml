@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+# Required to use Github OIDC Token with AWS
+permissions:
+  id-token: write
+
 jobs:
   is-terraform-code-formatted:
     name: 'Check Code Format'
