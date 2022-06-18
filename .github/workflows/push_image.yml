@@ -1,0 +1,77 @@
+name: 'Push Dockerised Application to ECR'
+
+on:
+  # Caller workflows must also have the "id-token: write" permission so that it can be used here
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+# Required to use Github OIDC Token with AWS
+permissions:
+  id-token: write
+
+env:
+  AWS_REGION: eu-west-1
+
+jobs:
+  push-to-ecr:
+    name: 'Push Dockerised Application to ECR'
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure DEV AWS credentials
+        if: ${{ inputs.environment == 'development'}}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::646359775865:role/RoleForGithubActions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure PROD AWS credentials
+        if: ${{ inputs.environment == 'production'}}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::787939685470:role/RoleForGithubActions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Create Image Tag
+        id: create-image-tag
+        run: |
+          IMAGE_TAG=$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}
+          echo "::notice title=Using Artifact Image Tag::$IMAGE_TAG"
+          echo "::set-output name=image_tag::$IMAGE_TAG"
+
+      - name: Build, Tag and Push Image to AWS ECR
+        env:
+          IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -o pipefail
+          ECR_REPO_URL=$(aws ssm get-parameter --name /ecr/deployment-artifacts/smalldomains/domain-manager --with-decryption | jq -r '.Parameter.Value')
+          docker build --build-arg ENVIRONMENT -t $ECR_REPO_URL:$IMAGE_TAG .
+          docker push $ECR_REPO_URL:$IMAGE_TAG
+
+      - name: Update SSM Param with Newly Pushed Tag
+        env:
+          IMAGE_TAG: ${{ steps.create-image-tag.outputs.image_tag }}
+        run: |
+          set -o pipefail
+          SSM_PARAM_NAME=/smalldomains/domain-manager/latest-docker-tag
+          
+          aws ssm put-parameter --name $SSM_PARAM_NAME --value $IMAGE_TAG \
+            --description "The tag of the most recently pushed Docker image" \
+            --type String --overwrite
+          
+          aws ssm add-tags-to-resource --resource-type Parameter --resource-id $SSM_PARAM_NAME \
+            --tags  Key=project,Value=small-domains \
+                    Key=managed_by,Value=cicd \
+                    Key=github_repo,Value=smalldomains.domain-manager

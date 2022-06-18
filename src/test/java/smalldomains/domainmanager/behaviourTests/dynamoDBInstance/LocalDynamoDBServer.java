@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
 import java.net.ServerSocket;
@@ -26,7 +27,7 @@ class LocalDynamoDBServer implements AutoCloseable {
 
     public LocalDynamoDBServer() throws Exception {
         // Local DynamoDB uses sqlite... this property is required to allow DynamoDB to use sqlite
-        System.setProperty("sqlite4java.library.path", "native-libs");
+        System.setProperty("sqlite4java.library.path", ".native-libs");
 
         this.port = findAvailablePort();
         final String availablePort = String.valueOf(this.port);
@@ -56,6 +57,7 @@ class LocalDynamoDBServer implements AutoCloseable {
                         // defining placeholder credentials here so that real credentials cannot accidentally be used
                         AwsBasicCredentials.create("fakeAccessKey", "fakeSecretKey")
                 ))
+                .region(Region.EU_WEST_1)
                 .endpointOverride(URI.create("http://localhost:%d".formatted(port)))
                 .build();
     }

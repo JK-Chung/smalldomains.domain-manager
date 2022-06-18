@@ -13,11 +13,8 @@ on:
 jobs:
   deploy-infrastructure:
     name: 'Deploy Infrastructure'
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
 
     steps:
       - name: Begin Infrastructure Deployment
@@ -27,7 +24,6 @@ jobs:
         run: |
           case ${{ inputs.environment }} in
             development)  echo "TF_WORKSPACE=smalldomains--domain-manager-dev" >> $GITHUB_ENV;;
-            staging)      echo "TF_WORKSPACE=smalldomains--domain-manager-stage" >> $GITHUB_ENV;;
             production)   echo "TF_WORKSPACE=smalldomains--domain-manager-prod" >> $GITHUB_ENV;;
             *)            echo "${{ inputs.environment }} is an unrecognised environment"; exit 1;;
           esac
