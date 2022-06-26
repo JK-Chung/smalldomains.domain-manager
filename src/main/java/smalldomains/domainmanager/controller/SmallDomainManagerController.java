@@ -35,7 +35,7 @@ public class SmallDomainManagerController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public Mono<SmallDomainDto> createRandomSmallDomain(@RequestBody final CreateRandomSmallDomainRequest createRequest) {
+    public Mono<SmallDomainDto> createRandomSmallDomain(@Valid @RequestBody final CreateRandomSmallDomainRequest createRequest) {
         return smallDomainService.createRandomSmallDomain(createRequest);
     }
 
