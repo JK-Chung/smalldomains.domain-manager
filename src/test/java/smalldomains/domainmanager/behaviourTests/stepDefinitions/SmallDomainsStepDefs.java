@@ -11,6 +11,9 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import smalldomains.domainmanager.behaviourTests.dynamoDBInstance.LocalDynamoDBOperations;
+import smalldomains.domainmanager.mapper.SmallDomainMapper;
+import smalldomains.domainmanager.restDto.CreateRandomSmallDomainRequest;
+import smalldomains.domainmanager.restDto.SmallDomainDto;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
@@ -24,6 +27,8 @@ import java.util.Map;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class SmallDomainsStepDefs {
 
@@ -35,6 +40,7 @@ public class SmallDomainsStepDefs {
     private final HttpClient httpClient;
     private final HttpRequest.Builder appRequestBuilder;
     private HttpResponse<String> appResponse;
+    private SmallDomainDto appResponseDto;
 
     @Autowired
     public SmallDomainsStepDefs(
@@ -82,6 +88,21 @@ public class SmallDomainsStepDefs {
     }
 
     @SneakyThrows
+    @When("I create a random SmallDomain redirecting to {word}")
+    public void iCreateARandomSmallDomainRedirectingToWord(final String large) {
+        final var createRandomSmallDomainRequest = new CreateRandomSmallDomainRequest(large);
+        final String smallDomainJson = objectMapper.writeValueAsString(createRandomSmallDomainRequest);
+
+        final var request = appRequestBuilder
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .POST(HttpRequest.BodyPublishers.ofString(smallDomainJson))
+                .build();
+
+        this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        this.appResponseDto = objectMapper.readValue(appResponse.body(), SmallDomainDto.class);
+    }
+
+    @SneakyThrows
     @When("I try to retrieve a SmallDomain of {word}")
     public void myRequestIsToCreateASmallDomainOfSmallRedirectingToLarge(final String small) {
         final var request = appRequestBuilder
@@ -90,8 +111,35 @@ public class SmallDomainsStepDefs {
                 .build();
 
         this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        this.appResponseDto = objectMapper.readValue(appResponse.body(), SmallDomainDto.class);
     }
 
+    @SneakyThrows
+    @Then("that random SmallDomain \\(redirecting to {word}) should exist")
+    public void thatRandomSmallDomainRedirectingToGoogleComShouldExist(final String large) {
+
+        final String small = appResponseDto.smallDomain();
+        final var request = GetItemRequest.builder()
+                .tableName(dynamoDbTableName)
+                .key(generateKey(small))
+                .consistentRead(true)
+                .build();
+
+        final var dynamoDbResponse = dynamoClient
+                .getItem(request)
+                .get(5, SECONDS)
+                .item();
+
+        if(dynamoDbResponse.isEmpty()) {
+            throw new AssertionError("SmallDomain does not exist!");
+        }
+
+        final var retrievedSmallDomain = SmallDomainMapper.itemToEntity(dynamoDbResponse);
+        assertAll(
+                () -> assertEquals(small, retrievedSmallDomain.smallDomain()),
+                () -> assertEquals(large, retrievedSmallDomain.largeDomain())
+        );
+    }
 
     @Then("my response code should be {int}")
     public void myResponseCodeShouldBe(final int expectedResponseCode) {
@@ -99,17 +147,35 @@ public class SmallDomainsStepDefs {
     }
 
     @SneakyThrows
+    @Then("a SmallDomain of {word} \\(redirecting to {word}) should NOT exist")
+    public void aSmallDomainOfSmallRedirectingToLargeShouldNotExist(final String small, final String large) {
+        final var request = GetItemRequest.builder()
+                .tableName(dynamoDbTableName)
+                .key(generateKey(small))
+                .consistentRead(true)
+                .build();
+
+        final var dynamoDbResponse = dynamoClient
+                .getItem(request)
+                .get(5, SECONDS)
+                .item();
+
+        if(!dynamoDbResponse.isEmpty()) {
+            final var smallDomainEntity = SmallDomainMapper.itemToEntity(dynamoDbResponse);
+
+            assertAll(
+                    () -> assertNotEquals(small, smallDomainEntity.smallDomain()),
+                    () -> assertNotEquals(large, smallDomainEntity.largeDomain())
+            );
+        }
+    }
+
+    @SneakyThrows
     @Then("my response body should be the SmallDomain of {word} \\(redirecting to {word})")
     public void myResponseBodyShouldBeTheNewlyCreatedSmallDomain(final String small, final String large) {
-        final Map<String, Object> responseJson = objectMapper.readValue(
-                appResponse.body(),
-                new TypeReference<>() {}
-        );
-
         assertAll(
-                () -> assertEquals(2, responseJson.size()),
-                () -> assertEquals(small, responseJson.get("smallDomain")),
-                () -> assertEquals(large, responseJson.get("largeDomain"))
+                () -> assertEquals(small, appResponseDto.smallDomain()),
+                () -> assertEquals(large, appResponseDto.largeDomain())
         );
     }
 
