@@ -11,8 +11,9 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import smalldomains.domainmanager.behaviourTests.dynamoDBInstance.LocalDynamoDBOperations;
-import smalldomains.domainmanager.entity.SmallDomain;
 import smalldomains.domainmanager.mapper.SmallDomainMapper;
+import smalldomains.domainmanager.restDto.CreateRandomSmallDomainRequest;
+import smalldomains.domainmanager.restDto.SmallDomainDto;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
@@ -39,6 +40,7 @@ public class SmallDomainsStepDefs {
     private final HttpClient httpClient;
     private final HttpRequest.Builder appRequestBuilder;
     private HttpResponse<String> appResponse;
+    private SmallDomainDto appResponseDto;
 
     @Autowired
     public SmallDomainsStepDefs(
@@ -86,11 +88,10 @@ public class SmallDomainsStepDefs {
     }
 
     @SneakyThrows
-    @Given("there already exists a SmallDomain of {word} \\(redirecting to {word})")
-    @When("I try to create a SmallDomain of {word} \\(redirecting to {word})")
-    public void myRequestIsToCreateASmallDomainOfSmallRedirectingToLarge(final String small, final String large) {
-        final SmallDomain newSmallDomain = new SmallDomain(small, large);
-        final String smallDomainJson = objectMapper.writeValueAsString(newSmallDomain);
+    @When("I create a random SmallDomain redirecting to {word}")
+    public void iCreateARandomSmallDomainRedirectingToWord(final String large) {
+        final var createRandomSmallDomainRequest = new CreateRandomSmallDomainRequest(large);
+        final String smallDomainJson = objectMapper.writeValueAsString(createRandomSmallDomainRequest);
 
         final var request = appRequestBuilder
                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -98,6 +99,7 @@ public class SmallDomainsStepDefs {
                 .build();
 
         this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        this.appResponseDto = objectMapper.readValue(appResponse.body(), SmallDomainDto.class);
     }
 
     @SneakyThrows
@@ -109,11 +111,14 @@ public class SmallDomainsStepDefs {
                 .build();
 
         this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        this.appResponseDto = objectMapper.readValue(appResponse.body(), SmallDomainDto.class);
     }
 
     @SneakyThrows
-    @Then("a SmallDomain of {word} \\(redirecting to {word}) should exist")
-    public void aSmallDomainOfSmallRedirectingToLargeShouldExist(final String small, final String large) {
+    @Then("that random SmallDomain \\(redirecting to {word}) should exist")
+    public void thatRandomSmallDomainRedirectingToGoogleComShouldExist(final String large) {
+
+        final String small = appResponseDto.smallDomain();
         final var request = GetItemRequest.builder()
                 .tableName(dynamoDbTableName)
                 .key(generateKey(small))
@@ -125,13 +130,20 @@ public class SmallDomainsStepDefs {
                 .get(5, SECONDS)
                 .item();
 
-        final var smallDomainThatShouldExist = new SmallDomain(small, large);
-        final var smallDomainThatActuallyExists = SmallDomainMapper.fromItem(dynamoDbResponse);
         if(dynamoDbResponse.isEmpty()) {
-            throw new AssertionError("SmallDomain %s does not exist".formatted(smallDomainThatShouldExist.toString()));
+            throw new AssertionError("SmallDomain does not exist!");
         }
 
-        assertEquals(smallDomainThatShouldExist, smallDomainThatActuallyExists);
+        final var retrievedSmallDomain = SmallDomainMapper.itemToEntity(dynamoDbResponse);
+        assertAll(
+                () -> assertEquals(small, retrievedSmallDomain.smallDomain()),
+                () -> assertEquals(large, retrievedSmallDomain.largeDomain())
+        );
+    }
+
+    @Then("my response code should be {int}")
+    public void myResponseCodeShouldBe(final int expectedResponseCode) {
+        assertEquals(expectedResponseCode, appResponse.statusCode());
     }
 
     @SneakyThrows
@@ -149,30 +161,21 @@ public class SmallDomainsStepDefs {
                 .item();
 
         if(!dynamoDbResponse.isEmpty()) {
-            final var smallDomainThatShouldExist = new SmallDomain(small, large);
-            final var smallDomainThatActuallyExists = SmallDomainMapper.fromItem(dynamoDbResponse);
+            final var smallDomainEntity = SmallDomainMapper.itemToEntity(dynamoDbResponse);
 
-            assertNotEquals(smallDomainThatShouldExist, smallDomainThatActuallyExists);
+            assertAll(
+                    () -> assertNotEquals(small, smallDomainEntity.smallDomain()),
+                    () -> assertNotEquals(large, smallDomainEntity.largeDomain())
+            );
         }
-    }
-
-    @Then("my response code should be {int}")
-    public void myResponseCodeShouldBe(final int expectedResponseCode) {
-        assertEquals(expectedResponseCode, appResponse.statusCode());
     }
 
     @SneakyThrows
     @Then("my response body should be the SmallDomain of {word} \\(redirecting to {word})")
     public void myResponseBodyShouldBeTheNewlyCreatedSmallDomain(final String small, final String large) {
-        final Map<String, Object> responseJson = objectMapper.readValue(
-                appResponse.body(),
-                new TypeReference<>() {}
-        );
-
         assertAll(
-                () -> assertEquals(2, responseJson.size()),
-                () -> assertEquals(small, responseJson.get("smallDomain")),
-                () -> assertEquals(large, responseJson.get("bigDomain"))
+                () -> assertEquals(small, appResponseDto.smallDomain()),
+                () -> assertEquals(large, appResponseDto.largeDomain())
         );
     }
 
@@ -207,7 +210,7 @@ public class SmallDomainsStepDefs {
     }
 
     private Map<String, AttributeValue> generateKey(final String smallDomain) {
-        return Map.of("small-url", AttributeValue.builder().s(smallDomain).build());
+        return Map.of("smallDomain", AttributeValue.builder().s(smallDomain).build());
     }
 
 }

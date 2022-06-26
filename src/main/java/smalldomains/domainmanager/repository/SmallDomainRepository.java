@@ -3,7 +3,8 @@ package smalldomains.domainmanager.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import smalldomains.domainmanager.entity.SmallDomain;
+import smalldomains.domainmanager.entity.SmallDomainEntity;
+import smalldomains.domainmanager.restDto.SmallDomainDto;
 import smalldomains.domainmanager.mapper.SmallDomainMapper;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -26,7 +27,7 @@ public class SmallDomainRepository {
         this.tableName = tableName;
     }
 
-    public CompletableFuture<Optional<SmallDomain>> getSmallDomain(final String smallDomain) {
+    public CompletableFuture<Optional<SmallDomainEntity>> getSmallDomain(final String smallDomain) {
         final var request = GetItemRequest.builder()
                 .tableName(tableName)
                 .key(generateKey(smallDomain))
@@ -37,8 +38,8 @@ public class SmallDomainRepository {
                 .thenApply(SmallDomainRepository::extractSmallDomainFromItem);
     }
 
-    public CompletableFuture<SmallDomain> saveSmallDomain(final SmallDomain toSave) {
-        final var saveable = SmallDomainMapper.toItem(toSave);
+    public CompletableFuture<SmallDomainEntity> saveSmallDomain(final SmallDomainEntity toSave) {
+        final var saveable = SmallDomainMapper.entityToItem(toSave);
 
         final var request = PutItemRequest.builder()
                 .tableName(tableName)
@@ -73,12 +74,12 @@ public class SmallDomainRepository {
     }
 
     private Map<String, AttributeValue> generateKey(final String smallDomain) {
-        return Map.of("small-url", AttributeValue.builder().s(smallDomain).build());
+        return Map.of("smallDomain", AttributeValue.builder().s(smallDomain).build());
     }
 
-    private static Optional<SmallDomain> extractSmallDomainFromItem(GetItemResponse r) {
+    private static Optional<SmallDomainEntity> extractSmallDomainFromItem(GetItemResponse r) {
         if (r.hasItem()) {
-            return Optional.of(SmallDomainMapper.fromItem(r.item()));
+            return Optional.of(SmallDomainMapper.itemToEntity(r.item()));
         } else {
             return Optional.empty();
         }

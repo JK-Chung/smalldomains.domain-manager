@@ -1,3 +1,6 @@
+smalldomains:
+  dailyDurationOfAnonSmallDomains: 365
+
 spring:
   main:
     # Allow tests to override beans defined in the main application context

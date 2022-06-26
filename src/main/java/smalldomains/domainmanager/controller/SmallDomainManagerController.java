@@ -7,7 +7,8 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import smalldomains.domainmanager.entity.SmallDomain;
+import smalldomains.domainmanager.restDto.CreateRandomSmallDomainRequest;
+import smalldomains.domainmanager.restDto.SmallDomainDto;
 import smalldomains.domainmanager.service.SmallDomainService;
 
 import javax.validation.Valid;
@@ -34,14 +35,13 @@ public class SmallDomainManagerController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public Mono<SmallDomain> createSmallDomain(@Valid @RequestBody final SmallDomain newSmallDomain, final ServerHttpRequest request) {
-        log.info("Received a %s request (%s) at %s".formatted(request.getMethodValue(), request.getId(), request.getPath()));
-        return smallDomainService.createNewSmallDomain(newSmallDomain);
+    public Mono<SmallDomainDto> createRandomSmallDomain(@Valid @RequestBody final CreateRandomSmallDomainRequest createRequest) {
+        return smallDomainService.createRandomSmallDomain(createRequest);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "{smallDomain}", produces = APPLICATION_JSON_VALUE)
-    public Mono<SmallDomain> getSmallDomain(@PathVariable final String smallDomain, final ServerHttpRequest request) {
+    public Mono<SmallDomainDto> getSmallDomain(@PathVariable final String smallDomain, final ServerHttpRequest request) {
         log.info("Received a %s request (%s) at %s".formatted(request.getMethodValue(), request.getId(), request.getPath()));
         return smallDomainService.getSmallDomain(smallDomain);
     }

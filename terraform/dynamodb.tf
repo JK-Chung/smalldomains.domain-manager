@@ -5,10 +5,10 @@ resource "aws_dynamodb_table" "small-domain-redirects" {
   read_capacity  = 1
   write_capacity = 1
 
-  hash_key = "small-url"
+  hash_key = "smallDomain"
 
   attribute {
-    name = "small-url"
+    name = "smallDomain"
     type = "S"
   }
 
