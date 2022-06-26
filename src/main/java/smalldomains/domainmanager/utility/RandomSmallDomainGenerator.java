@@ -43,7 +43,7 @@ public class RandomSmallDomainGenerator {
 
     private int[] generateRandomNumbers() {
         return IntStream.range(0, NO_CHARS_IN_RANDOM_SMALL_DOMAIN)
-                .map(ignorable -> random.nextInt(MAX_RANDOM_NUMBER + 1))
+                .map(ignorable -> random.nextInt(MAX_RANDOM_NUMBER))
                 .toArray();
     }
 
