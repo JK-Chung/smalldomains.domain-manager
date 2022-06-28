@@ -1,14 +1,15 @@
 package smalldomains.domainmanager.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import smalldomains.domainmanager.entity.SmallDomainEntity;
+import smalldomains.domainmanager.exception.NoSmallDomainExists;
 import smalldomains.domainmanager.mapper.SmallDomainMapper;
+import smalldomains.domainmanager.repository.SmallDomainRepository;
 import smalldomains.domainmanager.restDto.CreateRandomSmallDomainRequest;
 import smalldomains.domainmanager.restDto.SmallDomainDto;
-import smalldomains.domainmanager.exception.NoSmallDomainExists;
-import smalldomains.domainmanager.repository.SmallDomainRepository;
 import smalldomains.domainmanager.utility.RandomSmallDomainGenerator;
 
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.time.Period;
 /**
  * Service for the management of small domains
  */
+@Slf4j
 @Service
 public class SmallDomainService {
 
@@ -53,8 +55,19 @@ public class SmallDomainService {
                 .flatMap(optRetrievedSmallDomain -> optRetrievedSmallDomain
                                 .map(SmallDomainMapper::entityToDto)
                                 .map(Mono::just)
-                                .orElseGet(() -> Mono.error(new NoSmallDomainExists(smallDomain)))
-                );
+                                .orElse(Mono.error(new NoSmallDomainExists(smallDomain)))
+                )
+                .flatMap(retrievedSmallDomain -> {
+                    final boolean hasSmallDomainExpired = Instant.now().isAfter(Instant.ofEpochSecond(retrievedSmallDomain.expiringAt()));
+                    if(hasSmallDomainExpired) {
+                        repository.deleteSmallDomain(smallDomain)
+                                .thenAccept(ignorable -> log.error("Retrieved an expired SmallDomain. It has now been deleted. {}", retrievedSmallDomain));
+
+                        return Mono.error(new NoSmallDomainExists(smallDomain));
+                    } else {
+                        return Mono.just(retrievedSmallDomain);
+                    }
+                });
     }
 
 }
