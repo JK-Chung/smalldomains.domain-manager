@@ -60,9 +60,7 @@ public class SmallDomainService {
                 .flatMap(retrievedSmallDomain -> {
                     final boolean hasSmallDomainExpired = Instant.now().isAfter(Instant.ofEpochSecond(retrievedSmallDomain.expiringAt()));
                     if(hasSmallDomainExpired) {
-                        repository.deleteSmallDomain(smallDomain)
-                                .thenAccept(ignorable -> log.error("Retrieved an expired SmallDomain. It has now been deleted. {}", retrievedSmallDomain));
-
+                        repository.deleteSmallDomain(smallDomain).thenAccept(ignorable -> log.error("Retrieved an expired SmallDomain. It has now been deleted. {}", retrievedSmallDomain));
                         return Mono.error(new NoSmallDomainExists(smallDomain));
                     } else {
                         return Mono.just(retrievedSmallDomain);
