@@ -57,6 +57,15 @@ public class SmallDomainRepository {
                 });
     }
 
+    public CompletableFuture<Void> deleteSmallDomain(final String smallDomain) {
+        final var request = DeleteItemRequest.builder()
+                .tableName(tableName)
+                .key(generateKey(smallDomain))
+                .build();
+
+        return client.deleteItem(request).thenApply(ignorable -> null);
+    }
+
     public CompletableFuture<Boolean> isTableStillAvailable() {
         final var request = DescribeTableRequest.builder()
                 .tableName(tableName)

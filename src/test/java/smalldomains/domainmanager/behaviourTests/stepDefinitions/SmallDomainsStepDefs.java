@@ -8,10 +8,14 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import smalldomains.domainmanager.behaviourTests.dynamoDBInstance.LocalDynamoDBOperations;
+import smalldomains.domainmanager.entity.SmallDomainEntity;
 import smalldomains.domainmanager.mapper.SmallDomainMapper;
+import smalldomains.domainmanager.repository.SmallDomainRepository;
 import smalldomains.domainmanager.restDto.CreateRandomSmallDomainRequest;
 import smalldomains.domainmanager.restDto.SmallDomainDto;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
@@ -23,6 +27,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -32,20 +38,23 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class SmallDomainsStepDefs {
 
+    private static final Logger log = LoggerFactory.getLogger(SmallDomainsStepDefs.class);
+
     private final LocalDynamoDBOperations localDynamoDBOperations;
     private final DynamoDbAsyncClient dynamoClient;
+    private final SmallDomainRepository smallDomainRepository;
     private final String dynamoDbTableName;
     private final ObjectMapper objectMapper;
 
     private final HttpClient httpClient;
     private final HttpRequest.Builder appRequestBuilder;
     private HttpResponse<String> appResponse;
-    private SmallDomainDto appResponseDto;
 
     @Autowired
     public SmallDomainsStepDefs(
             LocalDynamoDBOperations localDynamoDBOperations,
             DynamoDbAsyncClient dynamoClient,
+            SmallDomainRepository smallDomainRepository,
             ObjectMapper objectMapper,
             HttpClient httpClient,
             @Value("${dynamodb.tablename}") String dynamoDbTableName,
@@ -53,6 +62,7 @@ public class SmallDomainsStepDefs {
     ) {
         this.localDynamoDBOperations = localDynamoDBOperations;
         this.dynamoClient = dynamoClient;
+        this.smallDomainRepository = smallDomainRepository;
         this.dynamoDbTableName = dynamoDbTableName;
         this.objectMapper = objectMapper;
         this.httpClient = httpClient;
@@ -88,6 +98,17 @@ public class SmallDomainsStepDefs {
     }
 
     @SneakyThrows
+    @Given("a SmallDomain of {word} \\(redirecting to {word}) exists but is expired")
+    public void aSmallDomainOfSmallDoesNotYetExist(final String smallDomain, final String largeDomain) {
+        smallDomainRepository.saveSmallDomain(new SmallDomainEntity(
+                smallDomain,
+                largeDomain,
+                Instant.now().minus(Duration.ofDays(365)).getEpochSecond(),
+                Instant.now().minus(Duration.ofSeconds(10)).getEpochSecond()
+        )).thenAccept(savedSmallDomain -> log.info("Saved SmallDomain: {}", savedSmallDomain)).get();
+    }
+
+    @SneakyThrows
     @When("I create a random SmallDomain redirecting to {word}")
     public void iCreateARandomSmallDomainRedirectingToWord(final String large) {
         final var createRandomSmallDomainRequest = new CreateRandomSmallDomainRequest(large);
@@ -99,7 +120,6 @@ public class SmallDomainsStepDefs {
                 .build();
 
         this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        this.appResponseDto = objectMapper.readValue(appResponse.body(), SmallDomainDto.class);
     }
 
     @SneakyThrows
@@ -111,14 +131,12 @@ public class SmallDomainsStepDefs {
                 .build();
 
         this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        this.appResponseDto = objectMapper.readValue(appResponse.body(), SmallDomainDto.class);
     }
 
     @SneakyThrows
     @Then("that random SmallDomain \\(redirecting to {word}) should exist")
     public void thatRandomSmallDomainRedirectingToGoogleComShouldExist(final String large) {
-
-        final String small = appResponseDto.smallDomain();
+        final String small = objectMapper.readValue(appResponse.body(), SmallDomainDto.class).smallDomain();
         final var request = GetItemRequest.builder()
                 .tableName(dynamoDbTableName)
                 .key(generateKey(small))
@@ -173,9 +191,10 @@ public class SmallDomainsStepDefs {
     @SneakyThrows
     @Then("my response body should be the SmallDomain of {word} \\(redirecting to {word})")
     public void myResponseBodyShouldBeTheNewlyCreatedSmallDomain(final String small, final String large) {
+        final SmallDomainDto smallDomainDto = objectMapper.readValue(appResponse.body(), SmallDomainDto.class);
         assertAll(
-                () -> assertEquals(small, appResponseDto.smallDomain()),
-                () -> assertEquals(large, appResponseDto.largeDomain())
+                () -> assertEquals(small, smallDomainDto.smallDomain()),
+                () -> assertEquals(large, smallDomainDto.largeDomain())
         );
     }
 
