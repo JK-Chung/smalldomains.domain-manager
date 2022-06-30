@@ -39,13 +39,7 @@ public class SmallDomainService {
 
 
     public Mono<SmallDomainDto> createRandomSmallDomain(final CreateRandomSmallDomainRequest createRequest) {
-        final SmallDomainEntity toSave = new SmallDomainEntity(
-                randomSmallDomainGenerator.generateRandomSmallDomain(),
-                createRequest.largeDomain(),
-                Instant.now().getEpochSecond(),
-                Instant.now().plus(Period.ofDays(DAILY_DURATION_OF_ANON_SMALL_DOMAINS)).getEpochSecond()
-        );
-
+        final SmallDomainEntity toSave = createRequestToSmallDomainEntity(createRequest);
         return Mono.fromFuture(repository.saveSmallDomain(toSave))
                 .map(SmallDomainMapper::entityToDto);
     }
@@ -66,6 +60,24 @@ public class SmallDomainService {
                         return Mono.just(retrievedSmallDomain);
                     }
                 });
+    }
+
+
+    private SmallDomainEntity createRequestToSmallDomainEntity(final CreateRandomSmallDomainRequest createRequest) {
+        return new SmallDomainEntity(
+                randomSmallDomainGenerator.generateRandomSmallDomain(),
+                getAbsoluteUrl(createRequest.largeDomain()),
+                Instant.now().getEpochSecond(),
+                Instant.now().plus(Period.ofDays(DAILY_DURATION_OF_ANON_SMALL_DOMAINS)).getEpochSecond()
+        );
+    }
+
+    private String getAbsoluteUrl(final String largeDomain) {
+        if(largeDomain.startsWith("https://") || largeDomain.startsWith("http://")) {
+            return largeDomain;
+        } else {
+            return "https://" + largeDomain;
+        }
     }
 
 }

@@ -13,10 +13,14 @@ public class DomainValidator implements ConstraintValidator<ValidDomain, String>
 
         try {
             final var url = new URL(toTest);
-            return !url.getHost().isBlank() && usingValidScheme(url);
+            return !url.getHost().isBlank() && usingValidScheme(url) && hasTLD(url);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean hasTLD(final URL url) {
+        return url.getHost().contains(".");
     }
 
     private boolean usingValidScheme(final URL url) {
