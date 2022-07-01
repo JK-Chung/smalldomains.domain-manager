@@ -1,12 +1,9 @@
 package smalldomains.domainmanager.validationConstraints;
 
-import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DomainValidator implements ConstraintValidator<ValidDomain, String> {
@@ -15,6 +12,10 @@ public class DomainValidator implements ConstraintValidator<ValidDomain, String>
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if(value == null) {
+            return false;
+        }
+
         final String toTest = value.startsWith("https://") || value.startsWith("http://") ? value : "https://" + value;
 
         try {

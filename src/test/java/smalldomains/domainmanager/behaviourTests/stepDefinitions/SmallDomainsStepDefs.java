@@ -112,14 +112,21 @@ public class SmallDomainsStepDefs {
     @When("I create a random SmallDomain redirecting to {word}")
     public void iCreateARandomSmallDomainRedirectingToWord(final String large) {
         final var createRandomSmallDomainRequest = new CreateRandomSmallDomainRequest(large);
-        final String smallDomainJson = objectMapper.writeValueAsString(createRandomSmallDomainRequest);
+        createSmallDomainWithAppApi(createRandomSmallDomainRequest);
+    }
 
-        final var request = appRequestBuilder
-                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .POST(HttpRequest.BodyPublishers.ofString(smallDomainJson))
-                .build();
+    @SneakyThrows
+    @When("I create a random SmallDomain with a null large domain")
+    public void iCreateARandomSmallDomainWithNullLargeDomain() {
+        final var createRandomSmallDomainRequest = new CreateRandomSmallDomainRequest(null);
+        createSmallDomainWithAppApi(createRandomSmallDomainRequest);
+    }
 
-        this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    @SneakyThrows
+    @When("I try to create a SmallDomain with a blank large domain")
+    public void iCreateARandomSmallDomainWithBlankLargeDomain() {
+        final var createRandomSmallDomainRequest = new CreateRandomSmallDomainRequest("");
+        createSmallDomainWithAppApi(createRandomSmallDomainRequest);
     }
 
     @SneakyThrows
@@ -214,6 +221,18 @@ public class SmallDomainsStepDefs {
                 () -> assertTrue(responseJson.containsKey("method")),
                 () -> assertTrue(responseJson.containsKey("error"))
         );
+    }
+
+    @SneakyThrows
+    private void createSmallDomainWithAppApi(final CreateRandomSmallDomainRequest createRandomSmallDomainRequest) {
+        final String smallDomainJson = objectMapper.writeValueAsString(createRandomSmallDomainRequest);
+
+        final var request = appRequestBuilder
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .POST(HttpRequest.BodyPublishers.ofString(smallDomainJson))
+                .build();
+
+        this.appResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     @SneakyThrows
