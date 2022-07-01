@@ -1,11 +1,17 @@
 package smalldomains.domainmanager.validationConstraints;
 
+import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DomainValidator implements ConstraintValidator<ValidDomain, String> {
+
+    private static final Pattern HAS_TLD_REGEX = Pattern.compile("[^.]+\\.[^.]+");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
@@ -20,7 +26,8 @@ public class DomainValidator implements ConstraintValidator<ValidDomain, String>
     }
 
     private boolean hasTLD(final URL url) {
-        return url.getHost().contains(".");
+        final String host = url.getHost();
+        return HAS_TLD_REGEX.matcher(host).find();
     }
 
     private boolean usingValidScheme(final URL url) {

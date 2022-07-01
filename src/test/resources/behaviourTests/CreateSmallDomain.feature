@@ -32,3 +32,15 @@ Feature: Creating a SmallDomain
     When I create a random SmallDomain redirecting to ftp://google.com
     Then my response code should be 400
     And my response body should match the standard error response
+
+  Scenario: I try to create a SmallDomain with only a TLD and no domain
+    Given the application is ready
+    When I create a random SmallDomain redirecting to .com
+    Then my response code should be 400
+    And my response body should match the standard error response
+
+  Scenario: I try to create a SmallDomain with only a domain and no TLD
+    Given the application is ready
+    When I create a random SmallDomain redirecting to com.
+    Then my response code should be 400
+    And my response body should match the standard error response
