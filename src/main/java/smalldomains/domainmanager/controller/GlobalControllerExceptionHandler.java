@@ -84,7 +84,7 @@ public class GlobalControllerExceptionHandler {
         return errorBody;
     }
 
-    private Map<String, Object> generateValidationErrors(final WebExchangeBindException ex) {
+    private Map<String, ?> generateValidationErrors(final WebExchangeBindException ex) {
         final Function<FieldError, String> toUserFriendlyErrorMessage = fieldError -> Optional.ofNullable(fieldError.getDefaultMessage())
                 .orElseGet(() -> {
                     log.error("No validation message has been set up for field. Can you set this up to improve UX? {}", fieldError);
@@ -92,7 +92,7 @@ public class GlobalControllerExceptionHandler {
                 });
 
         return ex.getBindingResult().getFieldErrors().stream()
-                .collect(Collectors.toMap(FieldError::getField, toUserFriendlyErrorMessage));
+                .collect(Collectors.groupingBy(FieldError::getField, Collectors.mapping(toUserFriendlyErrorMessage, Collectors.toList())));
     }
 
 }

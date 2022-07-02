@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import smalldomains.domainmanager.entity.SmallDomainEntity;
-import smalldomains.domainmanager.restDto.SmallDomainDto;
 import smalldomains.domainmanager.mapper.SmallDomainMapper;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.*;

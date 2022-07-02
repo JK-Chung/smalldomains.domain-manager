@@ -25,7 +25,7 @@ class DomainValidatorTest {
     @Test
     void ftpSchemeRejected() {
         final boolean isValid = new DomainValidator().isValid("ftp://google.com", null);
-        assertTrue(isValid);
+        assertFalse(isValid);
     }
 
     @ParameterizedTest
