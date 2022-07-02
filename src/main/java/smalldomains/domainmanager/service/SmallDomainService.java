@@ -62,7 +62,6 @@ public class SmallDomainService {
                 });
     }
 
-
     private SmallDomainEntity createRequestToSmallDomainEntity(final CreateRandomSmallDomainRequest createRequest) {
         return new SmallDomainEntity(
                 randomSmallDomainGenerator.generateRandomSmallDomain(),
