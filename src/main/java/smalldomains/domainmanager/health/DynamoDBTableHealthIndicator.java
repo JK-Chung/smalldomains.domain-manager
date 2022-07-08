@@ -25,9 +25,9 @@ public class DynamoDBTableHealthIndicator implements ReactiveHealthIndicator {
                 .map(Health.Builder::build)
                 .doOnSuccess(health -> {
                     if(health.getStatus().equals(Status.UP)) {
-                        log.info("Domain-Manager is Healthy: {}", health);
+                        log.info("Domain-Manager is Healthy: " + health);
                     } else {
-                        log.error("Domain-Manager is Unhealthy: {}", health);
+                        log.error("Domain-Manager is Unhealthy: " +  health);
                     }
                 })
                 .doOnError(error -> log.error("Domain-Manager is unhealthy with error: ", error));
