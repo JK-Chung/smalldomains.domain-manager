@@ -10,7 +10,7 @@ resource "aws_ecs_service" "domain-manager" {
   task_definition = aws_ecs_task_definition.domain-manager.family
 
   desired_count                      = var.environment == "dev" ? 1 : 2
-  deployment_minimum_healthy_percent = 100
+  deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
 
   ordered_placement_strategy {
