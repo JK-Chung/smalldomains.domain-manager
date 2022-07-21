@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class DomainValidator implements ConstraintValidator<ValidDomain, String> {
 
-    private static final Pattern HAS_TLD_REGEX = Pattern.compile("[^.]+\\.[^.]+");
+    private static final Pattern HAS_TLD_REGEX = Pattern.compile("[^.]+\\.[^.]+$");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
