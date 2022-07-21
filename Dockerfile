@@ -13,7 +13,7 @@ COPY src ./src
 RUN ./mvnw package -DskipTests --no-transfer-progress
 
 # PREPARE RUNNABLE
-FROM openjdk:17-alpine as RUN
+FROM amazoncorretto:17.0.4-alpine3.15 as RUN
 
 # ENVIRONMENT variable will configure the application
 ARG ENVIRONMENT

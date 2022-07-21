@@ -1,5 +1,5 @@
 management:
   endpoint:
     health:
-      # Consider changing this to when_authorized (https://www.baeldung.com/spring-boot-health-indicators#4-details-exposure)
+      # TODO Consider changing this to when_authorized (https://www.baeldung.com/spring-boot-health-indicators#4-details-exposure)
       show-details: never
