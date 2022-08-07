@@ -1,5 +1,7 @@
 smalldomains:
   dailyDurationOfAnonSmallDomains: 365
+  cors:
+    allowedOrigins: []
 
 dynamodb:
   region: eu-west-1

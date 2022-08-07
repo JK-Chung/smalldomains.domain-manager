@@ -1,22 +1,18 @@
 package smalldomains.domainmanager.controller;
 
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.WebExchangeBindException;
-import org.springframework.web.reactive.function.server.ServerRequest;
 import smalldomains.domainmanager.exception.NoSmallDomainExists;
 import smalldomains.domainmanager.exception.SmallDomainAlreadyExists;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,7 +40,7 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(SmallDomainAlreadyExists.class)
     public Map<String, Object> handleSmallDomainAlreadyExists(final ServerHttpRequest request, final SmallDomainAlreadyExists ex) {
         log.info("RequestId %s tried to create an already-existent SmallDomain (%s)".formatted(request.getId(), ex.getAlreadyExistingDomain()));
-        return generateErrorBody(request, "small domain already exists: %s".formatted(ex.getAlreadyExistingDomain()));
+        return generateErrorBody(request, "This SmallDomain already exists: %s".formatted(ex.getAlreadyExistingDomain()));
     }
 
     @ResponseBody
