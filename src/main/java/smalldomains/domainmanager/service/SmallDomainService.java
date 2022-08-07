@@ -65,18 +65,10 @@ public class SmallDomainService {
     private SmallDomainEntity createRequestToSmallDomainEntity(final CreateRandomSmallDomainRequest createRequest) {
         return new SmallDomainEntity(
                 randomSmallDomainGenerator.generateRandomSmallDomain(),
-                getAbsoluteUrl(createRequest.largeDomain()),
+                createRequest.largeDomain(),
                 Instant.now().getEpochSecond(),
                 Instant.now().plus(Period.ofDays(DAILY_DURATION_OF_ANON_SMALL_DOMAINS)).getEpochSecond()
         );
-    }
-
-    private String getAbsoluteUrl(final String largeDomain) {
-        if(largeDomain.startsWith("https://") || largeDomain.startsWith("http://")) {
-            return largeDomain;
-        } else {
-            return "https://" + largeDomain;
-        }
     }
 
 }
