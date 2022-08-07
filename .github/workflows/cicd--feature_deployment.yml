@@ -3,7 +3,7 @@ name: 'Deploy to Development'
 on:
   push:
 
-# Required to use Github OIDC Token with AWS
+# Required to use GitHub OIDC Token with AWS
 permissions:
   id-token: write
 

@@ -3,3 +3,7 @@ management:
     health:
       # TODO Consider changing this to when_authorized (https://www.baeldung.com/spring-boot-health-indicators#4-details-exposure)
       show-details: never
+
+smalldomains:
+  cors:
+    allowedOrigins: https://pages.small.domains
