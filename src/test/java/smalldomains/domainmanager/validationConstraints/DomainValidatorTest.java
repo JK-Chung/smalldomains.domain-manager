@@ -33,6 +33,18 @@ class DomainValidatorTest {
         assertFalse(isValid);
     }
 
+    @Test
+    void areIPAddressesRejected() {
+        final boolean isValid = new DomainValidator().isValid("256.231.129.9", null);
+        assertFalse(isValid);
+    }
+
+    @Test
+    void areCommaOnlysRejected() {
+        final boolean isValid = new DomainValidator().isValid(",,,,,.,,,,,,com", null);
+        assertFalse(isValid);
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"://", "google", "://google", "://google.com", "://google.com/"})
     void areUrlsWithEmptyDomainRejected(final String invalidUrl) {

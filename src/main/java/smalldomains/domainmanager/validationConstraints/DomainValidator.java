@@ -1,6 +1,7 @@
 package smalldomains.domainmanager.validationConstraints;
 
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.validator.UrlValidator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -20,29 +21,22 @@ public class DomainValidator implements ConstraintValidator<ValidDomain, String>
     private static final String IANA_VALID_TLDS_FILENAME = "/iana_valid_domains.txt";
     private static final Pattern HAS_TLD_REGEX = Pattern.compile("[^.]+\\.[^.]+$");
     private final Set<String> VALID_TLDS = getIANAValidTLDs();
+    private final UrlValidator urlValidator = new UrlValidator();
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if(value == null) {
+        if(value == null || value.startsWith("ftp://")) {
             return false;
         }
 
         final String toTest = value.startsWith("https://") || value.startsWith("http://") ? value : "https://" + value;
 
         try {
-            final var url = new URL(toTest);
-            return !url.getHost().isBlank()
-                    && usingValidScheme(url)
-                    && hasTLD(url)
-                    && hasValidTLD(url);
+            final URL url = new URL(toTest);
+            return urlValidator.isValid(toTest) && hasValidTLD(url);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private boolean hasTLD(final URL url) {
-        final String host = url.getHost();
-        return HAS_TLD_REGEX.matcher(host).find();
     }
 
     private boolean hasValidTLD(final URL url) {
@@ -67,9 +61,5 @@ public class DomainValidator implements ConstraintValidator<ValidDomain, String>
         }
     }
 
-    private boolean usingValidScheme(final URL url) {
-        final String scheme = url.getProtocol();
-        return scheme.equals("https") || scheme.equals("http");
-    }
 
 }
