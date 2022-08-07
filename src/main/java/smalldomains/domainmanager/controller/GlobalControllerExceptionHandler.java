@@ -32,7 +32,7 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Map<String, Object> handleAllOtherExceptions(final ServerHttpRequest request, final Exception ex) {
         log.error("Encountered exception when processing requestId {}", request.getId(), ex);
-        return generateErrorBody(request, "Internal Server Error");
+        return generateErrorBody(request, "There was an error when creating your SmallDomain");
     }
 
     @ResponseBody
