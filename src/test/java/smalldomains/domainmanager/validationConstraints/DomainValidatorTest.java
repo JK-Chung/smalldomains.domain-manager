@@ -1,6 +1,5 @@
 package smalldomains.domainmanager.validationConstraints;
 
-import org.hibernate.validator.internal.constraintvalidators.hv.URLValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,8 +27,14 @@ class DomainValidatorTest {
         assertFalse(isValid);
     }
 
+    @Test
+    void areNonIANATLDsRejected() {
+        final boolean isValid = new DomainValidator().isValid("google.d", null);
+        assertFalse(isValid);
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = {"://", "://google", "://google.com", "://google.com/"})
+    @ValueSource(strings = {"://", "google", "://google", "://google.com", "://google.com/"})
     void areUrlsWithEmptyDomainRejected(final String invalidUrl) {
         final boolean isValid = new DomainValidator().isValid(invalidUrl, null);
         assertFalse(isValid);
