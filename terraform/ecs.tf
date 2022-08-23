@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "domain-manager" {
   requires_compatibilities = ["EC2"]
   network_mode             = "awsvpc"
   cpu                      = 1024
-  memory                   = 460
+  memory                   = 950
   task_role_arn            = aws_iam_role.task_role_domain_manager.arn
   execution_role_arn       = data.aws_ssm_parameter.ecs-instance-role-arn.value
 
