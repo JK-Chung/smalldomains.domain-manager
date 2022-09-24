@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ FIELD })
 @Retention(RUNTIME)
 public @interface ValidDomain {
-    String message() default "must use a valid domain";
+    String message() default "A valid URL must be used";
 
     Class<?>[] groups() default {};
 
